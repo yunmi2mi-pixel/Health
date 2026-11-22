@@ -34,7 +34,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      padding-bottom: calc(var(--nav-height) + 24px);
+      padding-bottom: calc(var(--nav-height) + 76px);
       line-height: 1.45;
     }
 
@@ -179,35 +179,60 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Rest Timer Floating Bar */
-    .rest-bar {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
+    /* Floating Rest Timer Dock (Stays visible while scrolling & across tabs) */
+    .floating-rest-dock {
+      position: fixed;
+      bottom: calc(var(--nav-height) + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 616px;
+      z-index: 55;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(14px);
       border: 1px solid var(--primary);
       border-radius: 14px;
-      padding: 12px 14px;
-      margin-bottom: 16px;
+      padding: 10px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+      gap: 8px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
     }
 
-    .rest-bar.hidden {
+    .floating-rest-dock.hidden {
       display: none;
     }
 
+    .rest-left {
+      display: flex;
+      flex-direction: column;
+      min-width: 78px;
+    }
+
+    .rest-label {
+      font-size: 0.68rem;
+      color: #93c5fd;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+    }
+
     .rest-time {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #60a5fa;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #fff;
       font-variant-numeric: tabular-nums;
+      line-height: 1.15;
     }
 
     .rest-presets {
       display: flex;
-      gap: 5px;
+      gap: 4px;
       flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .btn-mini {
@@ -216,7 +241,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 5px 8px;
-      font-size: 0.73rem;
+      font-size: 0.72rem;
       font-weight: 600;
       cursor: pointer;
     }
@@ -234,6 +259,22 @@
       color: #fbbf24;
       border-color: rgba(245, 158, 11, 0.45);
       background: rgba(245, 158, 11, 0.12);
+    }
+
+    .ex-rest-select {
+      background: var(--surface-2);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      border-radius: 8px;
+      padding: 5px 7px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .ex-rest-select:focus {
+      outline: none;
+      border-color: var(--primary);
     }
 
     /* Exercise Card */
@@ -425,6 +466,12 @@
       align-items: center;
       gap: 6px;
       flex-wrap: wrap;
+    }
+
+    .ex-footer-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .note-input {
@@ -829,7 +876,7 @@
 
     .toast {
       position: fixed;
-      bottom: calc(var(--nav-height) + 16px);
+      bottom: calc(var(--nav-height) + 74px);
       left: 50%;
       transform: translateX(-50%) translateY(20px);
       background: #1e293b;
@@ -895,21 +942,6 @@
         <div class="stat-box">
           <div class="stat-label">진행률</div>
           <div class="stat-val" id="sumPct">0%</div>
-        </div>
-      </div>
-
-      <!-- Rest Timer Bar -->
-      <div id="restBar" class="rest-bar hidden">
-        <div>
-          <div style="font-size:0.7rem; color:var(--text-muted);">휴식 타이머</div>
-          <div id="restTimeDisplay" class="rest-time">01:30</div>
-        </div>
-        <div class="rest-presets">
-          <button class="btn-mini" data-rest="60">60s</button>
-          <button class="btn-mini" data-rest="90">90s</button>
-          <button class="btn-mini" data-rest="120">2m</button>
-          <button class="btn-mini" data-rest="180">3m</button>
-          <button class="btn-mini danger" id="stopRestBtn">종료</button>
         </div>
       </div>
 
@@ -1042,8 +1074,8 @@
         <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;" id="defaultRestOptions">
           <button class="btn-mini" data-default-rest="60">60초</button>
           <button class="btn-mini" data-default-rest="90">90초</button>
-          <button class="btn-mini" data-default-rest="120">120초</button>
-          <button class="btn-mini" data-default-rest="180">180초</button>
+          <button class="btn-mini" data-default-rest="120">2분</button>
+          <button class="btn-mini" data-default-rest="210">3분30</button>
         </div>
       </div>
 
@@ -1069,7 +1101,22 @@
     </section>
   </main>
 
-  <!-- Bottom Navigation -->
+  <!-- Floating Rest Timer Dock (Always follows scroll & tab changes) -->
+  <div id="restBar" class="floating-rest-dock hidden">
+    <div class="rest-left">
+      <div class="rest-label" id="restExerciseLabel">휴식 타이머</div>
+      <div id="restTimeDisplay" class="rest-time">01:30</div>
+    </div>
+    <div class="rest-presets">
+      <button class="btn-mini" data-rest="60">60s</button>
+      <button class="btn-mini" data-rest="90">90s</button>
+      <button class="btn-mini" data-rest="150">2m30</button>
+      <button class="btn-mini" data-rest="210">3m30</button>
+      <button class="btn-mini danger" id="stopRestBtn">종료</button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation (5 Tabs) -->
   <nav class="bottom-nav">
     <button class="nav-btn active" data-view="workout">
       <span class="nav-icon">💪</span>
@@ -1127,8 +1174,19 @@
   <div id="toast" class="toast"></div>
 
   <script>
+    // Rest time options (includes 3m30 = 210s)
+    const REST_CHOICES = [
+      { sec: 45, label: '45초' },
+      { sec: 60, label: '1분' },
+      { sec: 90, label: '1분30' },
+      { sec: 120, label: '2분' },
+      { sec: 150, label: '2분30' },
+      { sec: 180, label: '3분' },
+      { sec: 210, label: '3분30' }
+    ];
+
     // =========================================================
-    // 1. DEFAULT ROUTINE (Parsed from User's PDF)
+    // 1. DEFAULT ROUTINE (Parsed from User's PDF + Per-Exercise Rest)
     // =========================================================
     const DEFAULT_ROUTINES = {
       day1: {
@@ -1141,6 +1199,7 @@
             name: '바벨 벤치프레스',
             isMain: true,
             big3Key: 'bench',
+            restSec: 180,
             note: '메인 종목',
             sets: [
               { weight: 60, reps: 8, rpe: '', done: false },
@@ -1154,6 +1213,7 @@
             id: 'd1-inc-db',
             name: '인클라인 덤벨 프레스',
             isMain: false,
+            restSec: 90,
             note: '',
             sets: [
               { weight: 20, reps: 10, rpe: '', done: false },
@@ -1167,6 +1227,7 @@
             id: 'd1-inc-bb',
             name: '인클라인 벤치프레스',
             isMain: false,
+            restSec: 120,
             note: '',
             sets: [
               { weight: 60, reps: 8, rpe: '', done: false },
@@ -1178,6 +1239,7 @@
             id: 'd1-pec',
             name: '펙덱 플라이',
             isMain: false,
+            restSec: 60,
             note: '',
             sets: [
               { weight: 50, reps: 10, rpe: '', done: false },
@@ -1191,6 +1253,7 @@
             id: 'd1-dips',
             name: '딥스 (맨몸/중량)',
             isMain: false,
+            restSec: 90,
             note: '',
             sets: [
               { weight: 43, reps: 10, rpe: '', done: false },
@@ -1205,6 +1268,7 @@
             id: 'd1-tri',
             name: '삼두 오버헤드 익스텐션',
             isMain: false,
+            restSec: 60,
             note: '',
             sets: [
               { weight: 20, reps: 12, rpe: '', done: false },
@@ -1216,6 +1280,7 @@
             id: 'd1-abs',
             name: '복근 (레그레이즈)',
             isMain: false,
+            restSec: 60,
             note: '맨몸',
             sets: [
               { weight: 0, reps: 25, rpe: '', done: false },
@@ -1235,7 +1300,8 @@
             name: '땅 데드리프트',
             isMain: true,
             big3Key: 'deadlift',
-            note: '메인 종목',
+            restSec: 210,
+            note: '메인 종목 (기본 3분30)',
             sets: [
               { weight: 100, reps: 5, rpe: '', done: false },
               { weight: 140, reps: 3, rpe: '', done: false },
@@ -1247,6 +1313,7 @@
             id: 'd2-pullup',
             name: '턱걸이 (나사 3)',
             isMain: false,
+            restSec: 120,
             note: '기준 50',
             sets: [
               { weight: 50, reps: 10, rpe: '', done: false },
@@ -1260,6 +1327,7 @@
             id: 'd2-row',
             name: '로우',
             isMain: false,
+            restSec: 90,
             note: '',
             sets: [
               { weight: 50, reps: 10, rpe: '', done: false },
@@ -1271,6 +1339,7 @@
             id: 'd2-onearm',
             name: '원암 덤벨 로우',
             isMain: false,
+            restSec: 90,
             note: '',
             sets: [
               { weight: 30, reps: 10, rpe: '', done: false },
@@ -1283,6 +1352,7 @@
             id: 'd2-lat',
             name: '렛풀다운',
             isMain: false,
+            restSec: 90,
             note: '',
             sets: [
               { weight: 45, reps: 8, rpe: '', done: false },
@@ -1295,6 +1365,7 @@
             id: 'd2-bbcurl',
             name: '바벨 컬',
             isMain: false,
+            restSec: 60,
             note: '',
             sets: [
               { weight: 25, reps: 10, rpe: '', done: false },
@@ -1307,6 +1378,7 @@
             id: 'd2-dbcurl',
             name: '덤벨 컬',
             isMain: false,
+            restSec: 60,
             note: '',
             sets: [
               { weight: 7, reps: 14, rpe: '', done: false },
@@ -1319,6 +1391,7 @@
             id: 'd2-hammer',
             name: '해머 컬',
             isMain: false,
+            restSec: 60,
             note: '',
             sets: [
               { weight: 7, reps: 10, rpe: '', done: false },
@@ -1330,6 +1403,7 @@
             id: 'd2-abs',
             name: '복근 (레그레이즈)',
             isMain: false,
+            restSec: 60,
             note: '맨몸',
             sets: [
               { weight: 0, reps: 20, rpe: '', done: false },
@@ -1349,6 +1423,7 @@
             id: 'd3-legcurl',
             name: '레그컬',
             isMain: false,
+            restSec: 60,
             note: '선피로 / 웜업',
             sets: [
               { weight: 30, reps: 12, rpe: '', done: false },
@@ -1361,6 +1436,7 @@
             name: '바벨 스쿼트',
             isMain: true,
             big3Key: 'squat',
+            restSec: 180,
             note: '메인 종목',
             sets: [
               { weight: 60, reps: 5, rpe: '', done: false },
@@ -1375,6 +1451,7 @@
             name: '밀리터리 프레스 (OHP)',
             isMain: true,
             big3Key: 'ohp',
+            restSec: 150,
             note: '메인 종목',
             sets: [
               { weight: 40, reps: 10, rpe: '', done: false },
@@ -1387,6 +1464,7 @@
             id: 'd3-legpress',
             name: '레그프레스',
             isMain: false,
+            restSec: 90,
             note: '',
             sets: [
               { weight: 100, reps: 12, rpe: '', done: false },
@@ -1398,6 +1476,7 @@
             id: 'd3-bss',
             name: '불가리안 스플릿 스쿼트',
             isMain: false,
+            restSec: 90,
             note: '',
             sets: [
               { weight: 11, reps: 10, rpe: '', done: false },
@@ -1410,6 +1489,7 @@
             id: 'd3-msp',
             name: '머신 숄더 프레스',
             isMain: false,
+            restSec: 90,
             note: '',
             sets: [
               { weight: 40, reps: 10, rpe: '', done: false },
@@ -1423,6 +1503,7 @@
             id: 'd3-slr',
             name: '사이드 레터럴 레이즈',
             isMain: false,
+            restSec: 60,
             note: '',
             sets: [
               { weight: 4, reps: 25, rpe: '', done: false },
@@ -1436,6 +1517,7 @@
             id: 'd3-rear',
             name: '후면 (리어 델트)',
             isMain: false,
+            restSec: 60,
             note: '',
             sets: [
               { weight: 25, reps: 15, rpe: '', done: false },
@@ -1447,6 +1529,7 @@
             id: 'd3-abs',
             name: '복근 (레그레이즈)',
             isMain: false,
+            restSec: 60,
             note: '맨몸',
             sets: [
               { weight: 0, reps: 25, rpe: '', done: false },
@@ -1458,14 +1541,17 @@
       }
     };
 
-    const STORAGE_KEY = 'powerbuilding_3split_v2';
+    const STORAGE_KEY = 'powerbuilding_3split_v3';
 
     // =========================================================
     // 2. STATE MANAGEMENT
     // =========================================================
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('powerbuilding_3split_v1');
+        const raw =
+          localStorage.getItem(STORAGE_KEY) ||
+          localStorage.getItem('powerbuilding_3split_v2') ||
+          localStorage.getItem('powerbuilding_3split_v1');
         if (raw) {
           const parsed = JSON.parse(raw);
           if (!parsed.runs) parsed.runs = [];
@@ -1473,6 +1559,15 @@
           if (!parsed.settings.defaultRestSec) parsed.settings.defaultRestSec = 90;
           if (!parsed.settings.big3Goal) parsed.settings.big3Goal = 500;
           if (!parsed.settings.monthlyRunGoal) parsed.settings.monthlyRunGoal = 100;
+
+          // Ensure every exercise has a persisted restSec
+          Object.values(parsed.routines || {}).forEach(day => {
+            (day.exercises || []).forEach(ex => {
+              if (!ex.restSec) {
+                ex.restSec = ex.name.includes('데드') ? 210 : (ex.isMain ? 180 : parsed.settings.defaultRestSec);
+              }
+            });
+          });
           return parsed;
         }
       } catch (e) {
@@ -1497,11 +1592,9 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
-    // Calendar viewing month
     let calYear = new Date().getFullYear();
-    let calMonth = new Date().getMonth(); // 0-indexed
+    let calMonth = new Date().getMonth();
 
-    // Timers
     let workoutSec = 0;
     let workoutInterval = null;
     let restRemaining = 0;
@@ -1522,6 +1615,14 @@
       const m = String(Math.floor(sec / 60)).padStart(2, '0');
       const s = String(sec % 60).padStart(2, '0');
       return `${m}:${s}`;
+    }
+
+    function formatRestShort(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      if (m === 0) return `${s}초`;
+      if (s === 0) return `${m}분`;
+      return `${m}분${s}초`;
     }
 
     function todayISO() {
@@ -1565,11 +1666,9 @@
       } catch (e) {}
     }
 
-    // Lookup previous session sets & all-time best 1RM for an exercise
     function getExerciseHistoryStats(exName) {
       let prevSets = null;
       let best1RM = 0;
-      let bestWeight = 0;
 
       for (const h of state.history) {
         const found = h.exercises.find(e => e.name === exName);
@@ -1581,15 +1680,14 @@
             if (s.isWarmup) return;
             const rm = calcEpley1RM(s.weight, s.reps);
             if (rm > best1RM) best1RM = rm;
-            if ((Number(s.weight) || 0) > bestWeight) bestWeight = Number(s.weight) || 0;
           });
         }
       }
-      return { prevSets, best1RM, bestWeight };
+      return { prevSets, best1RM };
     }
 
     // =========================================================
-    // 4. WORKOUT & REST TIMERS
+    // 4. WORKOUT & FLOATING REST TIMERS
     // =========================================================
     const workoutTimerBtn = document.getElementById('workoutTimerBtn');
     const workoutTimerDot = document.getElementById('workoutTimerDot');
@@ -1613,11 +1711,14 @@
 
     workoutTimerBtn.addEventListener('click', toggleWorkoutTimer);
 
-    function startRestTimer(seconds) {
+    function startRestTimer(seconds, labelText = '휴식 타이머') {
       clearInterval(restInterval);
-      restRemaining = seconds;
+      restRemaining = Number(seconds) || state.settings.defaultRestSec || 90;
       const bar = document.getElementById('restBar');
       const disp = document.getElementById('restTimeDisplay');
+      const labelEl = document.getElementById('restExerciseLabel');
+
+      labelEl.textContent = labelText;
       bar.classList.remove('hidden');
       disp.textContent = formatTime(restRemaining);
 
@@ -1627,9 +1728,10 @@
           clearInterval(restInterval);
           restInterval = null;
           disp.textContent = '00:00';
+          labelEl.textContent = '휴식 완료!';
           playBeep();
           showToast('휴식 완료! 다음 세트 시작하세요 💪');
-          setTimeout(() => bar.classList.add('hidden'), 1800);
+          setTimeout(() => bar.classList.add('hidden'), 2000);
         } else {
           disp.textContent = formatTime(restRemaining);
         }
@@ -1643,7 +1745,10 @@
     });
 
     document.querySelectorAll('[data-rest]').forEach(btn => {
-      btn.addEventListener('click', () => startRestTimer(Number(btn.dataset.rest)));
+      btn.addEventListener('click', () => {
+        const sec = Number(btn.dataset.rest);
+        startRestTimer(sec, `수동 휴식 (${formatRestShort(sec)})`);
+      });
     });
 
     // =========================================================
@@ -1704,6 +1809,7 @@
         const card = document.createElement('div');
         card.className = `exercise-card ${ex.isMain ? 'is-main' : ''}`;
 
+        const exRestSec = ex.restSec || state.settings.defaultRestSec || 90;
         const hist = getExerciseHistoryStats(ex.name);
         const currentMax1RM = Math.max(0, ...ex.sets.filter(s => !s.isWarmup).map(s => calcEpley1RM(s.weight, s.reps)));
         const doneMax1RM = Math.max(0, ...ex.sets.filter(s => s.done && !s.isWarmup).map(s => calcEpley1RM(s.weight, s.reps)));
@@ -1727,7 +1833,6 @@
           const isW = Boolean(s.isWarmup);
           const label = isW ? 'W' : ++workingIdx;
 
-          // Previous record hint for working sets
           let prevHtml = '';
           if (!isW && hist.prevSets && hist.prevSets[workingIdx - 1]) {
             const p = hist.prevSets[workingIdx - 1];
@@ -1759,6 +1864,10 @@
           `;
         });
 
+        const restOptionsHtml = REST_CHOICES.map(choice =>
+          `<option value="${choice.sec}" ${Number(exRestSec) === choice.sec ? 'selected' : ''}>휴식 ${choice.label}</option>`
+        ).join('');
+
         card.innerHTML = `
           <div class="ex-header">
             <div class="ex-title-wrap">
@@ -1780,7 +1889,12 @@
           ${setsHtml}
           <div class="ex-footer">
             <button class="btn-mini" data-action="add-set" data-ex="${exIdx}">+ 세트 추가</button>
-            <button class="btn-mini" data-action="start-rest">⏱ 휴식 ${state.settings.defaultRestSec}s</button>
+            <div class="ex-footer-right">
+              <select class="ex-rest-select" data-action="change-ex-rest" data-ex="${exIdx}" title="이 운동의 고정 휴식시간">
+                ${restOptionsHtml}
+              </select>
+              <button class="btn-mini" data-action="start-rest" data-ex="${exIdx}">⏱ 시작</button>
+            </div>
           </div>
           <input type="text" class="note-input" data-action="edit-note" data-ex="${exIdx}" placeholder="메모 (그립, 컨디션, 머신 세팅 등)" value="${ex.note || ''}" />
         `;
@@ -1811,12 +1925,20 @@
 
     document.getElementById('exerciseList').addEventListener('change', e => {
       const target = e.target;
+      const day = state.routines[state.activeDay];
+
       if (target.classList.contains('rpe-select')) {
         const block = target.closest('.set-block');
         const exIdx = Number(block.dataset.ex);
         const setIdx = Number(block.dataset.set);
-        state.routines[state.activeDay].exercises[exIdx].sets[setIdx].rpe = target.value;
+        day.exercises[exIdx].sets[setIdx].rpe = target.value;
         saveState();
+      } else if (target.dataset.action === 'change-ex-rest') {
+        const exIdx = Number(target.dataset.ex);
+        const newSec = Number(target.value);
+        day.exercises[exIdx].restSec = newSec;
+        saveState();
+        showToast(`${day.exercises[exIdx].name} 휴식시간이 ${formatRestShort(newSec)}(으)로 고정되었습니다.`);
       }
     });
 
@@ -1830,11 +1952,13 @@
         const block = btn.closest('.set-block');
         const exIdx = Number(block.dataset.ex);
         const setIdx = Number(block.dataset.set);
-        const setObj = day.exercises[exIdx].sets[setIdx];
+        const ex = day.exercises[exIdx];
+        const setObj = ex.sets[setIdx];
         setObj.done = !setObj.done;
         if (setObj.done) {
           if (!workoutInterval && workoutSec === 0) toggleWorkoutTimer();
-          startRestTimer(state.settings.defaultRestSec);
+          const exRest = ex.restSec || state.settings.defaultRestSec || 90;
+          startRestTimer(exRest, `${ex.name} (${formatRestShort(exRest)})`);
         }
         saveState();
         renderWorkout();
@@ -1860,7 +1984,6 @@
         if (!input || isNaN(Number(input)) || Number(input) <= 0) return;
         const targetW = Number(input);
 
-        // Remove existing warmups first
         ex.sets = ex.sets.filter(s => !s.isWarmup);
         const warmups = [
           { weight: roundTo2_5(targetW * 0.5), reps: 8, rpe: '', done: false, isWarmup: true },
@@ -1879,7 +2002,10 @@
           renderWorkout();
         }
       } else if (action === 'start-rest') {
-        startRestTimer(state.settings.defaultRestSec);
+        const exIdx = Number(btn.dataset.ex);
+        const ex = day.exercises[exIdx];
+        const exRest = ex.restSec || state.settings.defaultRestSec || 90;
+        startRestTimer(exRest, `${ex.name} (${formatRestShort(exRest)})`);
       }
     });
 
@@ -1905,6 +2031,7 @@
         id: 'ex-' + Date.now(),
         name,
         isMain,
+        restSec: isMain ? 180 : state.settings.defaultRestSec,
         note: '',
         sets
       });
@@ -1961,7 +2088,6 @@
         exercises: completedExercises
       });
 
-      // Reset checkmarks & remove temporary warmup sets for next session
       day.exercises.forEach(ex => {
         ex.sets = ex.sets.filter(s => !s.isWarmup);
         ex.sets.forEach(s => { s.done = false; });
@@ -2112,7 +2238,6 @@
       const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
       const todayStr = todayISO();
 
-      // Map dateISO -> Set of tags (d1, d2, d3, run)
       const dayMap = {};
       const addTag = (iso, tag) => {
         if (!iso) return;
@@ -2355,7 +2480,7 @@
         saveState();
         renderSettings();
         renderWorkout();
-        showToast(`기본 휴식 시간: ${state.settings.defaultRestSec}초`);
+        showToast(`기본 휴식 시간: ${formatRestShort(state.settings.defaultRestSec)}`);
       });
     });
 

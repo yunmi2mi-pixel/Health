@@ -1,1373 +1,2430 @@
 <!DOCTYPE html>
-<html lang="ko" class="dark">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PX 카드마스터 Pro</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        army: {
-                            900: '#0f172a',
-                            800: '#1e293b',
-                            700: '#334155',
-                            accent: '#10b981',
-                            gold: '#f59e0b',
-                            khaki: '#4d5b44'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome for Military / Store Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap');
-        body {
-            font-family: 'Pretendard', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-        /* Custom Scrollbar for Catalog & History */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 4px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>3분할 파워빌딩 트래커 PRO</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: #151e32;
+      --surface-2: #1e293b;
+      --border: #2a3950;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --pink: #ec4899;
+      --radius: 14px;
+      --nav-height: 68px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: calc(var(--nav-height) + 24px);
+      line-height: 1.45;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 17, 32, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-title span.badge {
+      font-size: 0.68rem;
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .workout-timer-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .workout-timer-pill.running {
+      border-color: var(--success);
+      color: #34d399;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Day Selector */
+    .day-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .day-tab {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .day-tab .day-num {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .day-tab .day-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .day-tab.active {
+      background: rgba(59, 130, 246, 0.16);
+      border-color: var(--primary);
+    }
+
+    .day-tab.active .day-num {
+      color: #60a5fa;
+    }
+
+    /* Summary Strip */
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .stat-val {
+      font-size: 1.02rem;
+      font-weight: 800;
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Rest Timer Floating Bar */
+    .rest-bar {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid var(--primary);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .rest-bar.hidden {
+      display: none;
+    }
+
+    .rest-time {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #60a5fa;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rest-presets {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .btn-mini {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 8px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-mini:active {
+      transform: scale(0.96);
+    }
+
+    .btn-mini.danger {
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-mini.accent {
+      color: #fbbf24;
+      border-color: rgba(245, 158, 11, 0.45);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    /* Exercise Card */
+    .exercise-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 12px;
+      margin-bottom: 14px;
+    }
+
+    .exercise-card.is-main {
+      border-left: 4px solid var(--accent);
+    }
+
+    .ex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .ex-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .ex-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .main-tag {
+      font-size: 0.64rem;
+      font-weight: 800;
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .pr-badge {
+      font-size: 0.64rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #f59e0b, #ec4899);
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+
+    .ex-meta {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .ex-actions {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    /* Set Table with RPE */
+    .set-header, .set-row {
+      display: grid;
+      grid-template-columns: 28px 1fr 1fr 56px 36px 24px;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .set-header {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 6px;
+    }
+
+    .set-block {
+      margin-bottom: 4px;
+      border-radius: 8px;
+      padding: 4px 2px;
+      transition: background 0.15s;
+    }
+
+    .set-block.done {
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .set-block.warmup {
+      background: rgba(245, 158, 11, 0.06);
+    }
+
+    .set-num {
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .set-num.w-label {
+      color: #fbbf24;
+    }
+
+    .set-input, .rpe-select {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 7px 4px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rpe-select {
+      font-size: 0.78rem;
+      padding: 7px 2px;
+    }
+
+    .set-input:focus, .rpe-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .check-btn {
+      width: 34px;
+      height: 34px;
+      margin: 0 auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .set-block.done .check-btn {
+      background: var(--success);
+      border-color: var(--success);
+      color: #06281e;
+    }
+
+    .del-set-btn {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 2px;
+    }
+
+    .del-set-btn:hover {
+      color: var(--danger);
+    }
+
+    .prev-hint {
+      font-size: 0.7rem;
+      color: #64748b;
+      padding-left: 34px;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prev-hint .beat {
+      color: #34d399;
+      font-weight: 700;
+    }
+
+    .ex-footer {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .note-input {
+      width: 100%;
+      margin-top: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 7px 10px;
+      font-size: 0.78rem;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #052e16;
+    }
+
+    .btn-secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .action-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-size: 0.96rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .big-num {
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: #fbbf24;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .big-num.pink {
+      color: #f472b6;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 12px;
+      background: var(--surface-2);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 10px 0 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #f59e0b);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-fill.run {
+      background: linear-gradient(90deg, #ec4899, #8b5cf6);
+    }
+
+    .lift-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .lift-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .lift-name {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .lift-val {
+      font-size: 1.18rem;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .lift-sub {
+      font-size: 0.72rem;
+      color: #60a5fa;
+      margin-top: 2px;
+    }
+
+    /* Calendar */
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .cal-month {
+      font-size: 0.98rem;
+      font-weight: 800;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+
+    .cal-dow {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      padding-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .cal-cell {
+      min-height: 44px;
+      background: var(--surface-2);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 4px 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 4px;
+    }
+
+    .cal-cell.empty {
+      background: transparent;
+    }
+
+    .cal-cell.today {
+      border-color: var(--primary);
+    }
+
+    .cal-day-num {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .cal-dots {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .dot.d1 { background: #3b82f6; }
+    .dot.d2 { background: #10b981; }
+    .dot.d3 { background: #f59e0b; }
+    .dot.run { background: #ec4899; }
+
+    .cal-legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 12px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .cal-legend span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* History List */
+    .history-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .history-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 6px;
+    }
+
+    .history-date {
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .history-badge {
+      font-size: 0.7rem;
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .history-badge.run {
+      background: rgba(236, 72, 153, 0.2);
+      color: #f9a8d4;
+    }
+
+    .history-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .history-details {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      display: none;
+    }
+
+    .history-item.open .history-details {
+      display: block;
+    }
+
+    .history-ex-line {
+      margin-bottom: 4px;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.9rem;
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .pace-preview {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.84rem;
+      color: #f472b6;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    /* Bottom Navigation (5 Tabs) */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      z-index: 60;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      color: #60a5fa;
+    }
+
+    .nav-icon {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      padding: 18px;
+    }
+
+    .modal h3 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: calc(var(--nav-height) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid var(--primary);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 120;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+    }
+
+    .svg-chart {
+      width: 100%;
+      height: 180px;
+      display: block;
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen pb-12 antialiased selection:bg-emerald-500 selection:text-white">
+<body>
 
-    <!-- Top App Header -->
-    <header class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur border-b border-slate-800 px-4 py-3">
-        <div class="max-w-md mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div class="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-600/30">
-                    <i class="fa-solid fa-[#fa-shield-halved] fa-shield-halved text-xl"></i>
-                </div>
-                <div>
-                    <div class="flex items-center space-x-1.5">
-                        <h1 class="font-extrabold text-base tracking-tight text-white">PX 카드마스터</h1>
-                        <span class="bg-amber-500 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded">PRO</span>
-                    </div>
-                    <p class="text-[11px] text-slate-400">3기 나라사랑카드 PX 실전 결제 엔진</p>
-                </div>
-            </div>
-
-            <!-- Global Action Controls -->
-            <div class="flex items-center space-x-2">
-                <!-- Settings Modal Trigger -->
-                <button onclick="openSettingsModal()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center space-x-1 border border-slate-700">
-                    <i class="fa-solid fa-sliders text-xs text-amber-400"></i>
-                    <span>설정</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Mobile Container -->
-    <main class="max-w-md mx-auto px-4 pt-4 space-y-4">
-
-        <!-- Top Toggles Control Bar (Payday & Split Payment ON/OFF) -->
-        <div class="grid grid-cols-2 gap-2">
-            <!-- Payday Toggle -->
-            <button id="paydayToggleBtn" onclick="togglePaydayMode()" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-all text-xs">
-                <span class="flex items-center space-x-1.5 text-slate-300 font-medium">
-                    <i class="fa-regular fa-calendar-check text-amber-400"></i>
-                    <span>급여일(10일)</span>
-                </span>
-                <span id="paydayStatusBadge" class="font-bold px-2 py-0.5 rounded-full text-[11px] bg-slate-800 text-slate-400">OFF</span>
-            </button>
-
-            <!-- Split Payment Toggle (Key Feature requested) -->
-            <button id="splitPaymentToggleBtn" onclick="toggleSplitPaymentMode()" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900 border border-emerald-500/40 transition-all text-xs shadow-sm shadow-emerald-500/10">
-                <span class="flex items-center space-x-1.5 text-slate-200 font-semibold">
-                    <i class="fa-solid fa-code-fork text-emerald-400"></i>
-                    <span>분할 결제</span>
-                </span>
-                <span id="splitPaymentStatusBadge" class="font-extrabold px-2 py-0.5 rounded-full text-[11px] bg-emerald-500 text-slate-950">ON</span>
-            </button>
-        </div>
-
-        <!-- Main Cashback Summary Banner -->
-        <div class="rounded-2xl bg-slate-900 border border-slate-800 p-4 shadow-xl relative overflow-hidden">
-            <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-emerald-500/10 rounded-full blur-xl pointer-events-none"></div>
-
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="recommendationModeLabel">최대 환급 최적 결제 추천</span>
-                </span>
-                <span id="totalCashbackBadge" class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-extrabold px-2.5 py-1 rounded-full">
-                    최대 환급 0원
-                </span>
-            </div>
-
-            <!-- Cart Total Amount Display -->
-            <div class="flex items-baseline justify-between my-3">
-                <span class="text-xs text-slate-400 font-medium">장바구니 총액</span>
-                <div class="text-right">
-                    <span id="cartTotalText" class="text-3xl font-black text-white tracking-tight">0</span>
-                    <span class="text-lg font-bold text-slate-300 ml-0.5">원</span>
-                </div>
-            </div>
-
-            <!-- Limit Maximizer Trigger Button -->
-            <button onclick="openLimitMaximizerModal()" class="w-full py-2 bg-gradient-to-r from-amber-600/30 to-amber-500/20 hover:from-amber-600/40 hover:to-amber-500/30 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition">
-                <i class="fa-solid fa-bullseye text-amber-400"></i>
-                <span>한도 털어먹기 (영끌 계산)</span>
-            </button>
-        </div>
-
-        <!-- Payment Recommendation Plan Panel -->
-        <div class="rounded-2xl bg-slate-900 border border-slate-800 p-4 shadow-lg space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <div class="flex items-center space-x-1.5">
-                    <i class="fa-solid fa-[#fa-wand-magic-sparkles] fa-wand-magic-sparkles text-amber-400 text-sm"></i>
-                    <h2 class="text-sm font-bold text-slate-200">추천 결제 플랜</h2>
-                </div>
-                <span id="planModeBadge" class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    분할 결제 강추
-                </span>
-            </div>
-
-            <!-- Dynamic Steps List -->
-            <div id="paymentPlanList" class="space-y-2">
-                <!-- Dynamic payment plan rows inserted via JS -->
-            </div>
-
-            <!-- Receipt 2-Split Guide Modal Trigger (Only visible when Split Payment is ON) -->
-            <button id="splitGuideBtn" onclick="openSplitGuideModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition">
-                <i class="fa-solid fa-[#fa-receipt] fa-receipt text-amber-400"></i>
-                <span>바구니 물품 자동 쪼개기 (영수증 2개 분리 가이드)</span>
-            </button>
-
-            <!-- Complete Payment Action Button -->
-            <button onclick="executePaymentCompletion()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-extrabold rounded-xl text-sm shadow-lg shadow-emerald-600/30 flex items-center justify-center space-x-2 transition">
-                <i class="fa-solid fa-[#fa-check-double] fa-check-double"></i>
-                <span>이대로 결제 완료 (한도 차감 및 영수증 저장)</span>
-            </button>
-        </div>
-
-        <!-- Tier-Jump Tip Banner -->
-        <div id="tierJumpBanner" class="hidden rounded-xl bg-amber-950/40 border border-amber-500/40 p-3 flex items-start space-x-3 text-amber-200 text-xs">
-            <i class="fa-solid fa-[#fa-lightbulb] fa-lightbulb text-amber-400 text-sm mt-0.5 flex-shrink-0"></i>
-            <div class="flex-1" id="tierJumpBannerText">
-                팁: N원만 더 담으면 추가 할인 혜택 구간에 진입합니다!
-            </div>
-        </div>
-
-        <!-- Favorites Quick Bar -->
-        <div class="space-y-2">
-            <div class="flex items-center justify-between text-xs px-1">
-                <span class="font-bold text-slate-300 flex items-center gap-1">
-                    <i class="fa-solid fa-star text-amber-400"></i>
-                    <span>즐겨찾기 퀵 담기</span>
-                </span>
-                <span class="text-[11px] text-slate-500">클릭 시 +1 추가</span>
-            </div>
-            <div id="quickFavoritesBar" class="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar">
-                <!-- Favorites pills generated via JS -->
-            </div>
-        </div>
-
-        <!-- Cart Items List Container -->
-        <div class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-[#fa-cart-shopping] fa-cart-shopping text-emerald-400"></i>
-                    <h3 class="font-bold text-sm text-slate-200">담은 PX 물품 목록</h3>
-                    <span id="cartCountBadge" class="bg-slate-800 text-slate-300 text-[11px] font-extrabold px-2 py-0.5 rounded-full">0개</span>
-                </div>
-                <button onclick="clearCart()" class="text-xs text-rose-400 hover:text-rose-300 font-medium">
-                    <i class="fa-solid fa-trash-can mr-1"></i>비우기
-                </button>
-            </div>
-
-            <!-- Cart Items Scroll Area -->
-            <div id="cartItemsContainer" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-                <!-- Cart items rendered via JS -->
-            </div>
-
-            <!-- Open Full Catalog Button -->
-            <button onclick="openCatalogModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-750 text-emerald-400 border border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition">
-                <i class="fa-solid fa-[#fa-store] fa-store"></i>
-                <span>전체 품목 카탈로그 (28종+ 검색 & 추가)</span>
-            </button>
-        </div>
-
-        <!-- Card Remaining Limits Status Card -->
-        <div class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-credit-card text-emerald-400"></i>
-                    <h3 class="font-bold text-sm text-slate-200">3기 나라사랑카드 잔여 혜택 현황</h3>
-                </div>
-                <button onclick="openHistoryModal()" class="text-xs text-amber-400 font-semibold hover:underline">
-                    이력/백업
-                </button>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                <!-- IBK -->
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <div class="text-[11px] font-bold text-blue-400">IBK 기업</div>
-                    <div id="statusIBKLimit" class="text-xs font-extrabold text-slate-200 mt-1">50,000원</div>
-                    <div id="statusIBKCount" class="text-[10px] text-slate-400 mt-0.5">3만원↑ 2회남음</div>
-                </div>
-                <!-- Shinhan -->
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <div class="text-[11px] font-bold text-blue-300">신한 카드</div>
-                    <div id="statusShinhanLimit" class="text-xs font-extrabold text-slate-200 mt-1">100,000원</div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">3만원↑ 20%</div>
-                </div>
-                <!-- Hana -->
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <div class="text-[11px] font-bold text-emerald-300">하나 카드</div>
-                    <div id="statusHanaLimit" class="text-xs font-extrabold text-slate-200 mt-1">100,000원</div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">3만원↓ 30%</div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- ==================== MODALS SECTION ==================== -->
-
-    <!-- 1. Settings & Card Limits Modal -->
-    <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 class="font-extrabold text-base text-white flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-amber-400"></i>
-                    <span>카드 보유 & 한도 설정</span>
-                </h3>
-                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <!-- Card Selection & Custom Limits -->
-            <div class="space-y-4 text-xs">
-                <!-- IBK Card Settings -->
-                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center space-x-2 font-bold text-blue-400 cursor-pointer">
-                            <input type="checkbox" id="ownIBK" class="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0" checked onchange="saveUserSettings()">
-                            <span>IBK 기업 나라사랑카드</span>
-                        </label>
-                        <label class="flex items-center space-x-1 text-[11px] text-amber-300 cursor-pointer bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">
-                            <input type="checkbox" id="ibkSalaryTransfer" class="rounded bg-slate-800 border-slate-700 text-amber-500" checked onchange="saveUserSettings()">
-                            <span>병 급여이체(혜택↑)</span>
-                        </label>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 pt-1">
-                        <div>
-                            <span class="text-[11px] text-slate-400">3만원↑ 잔여한도 (최대 5만)</span>
-                            <input type="number" id="ibkOver30kLimit" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-bold mt-1" value="50000" onchange="saveUserSettings()">
-                        </div>
-                        <div>
-                            <span class="text-[11px] text-slate-400">3만원↑ 남은 횟수 (최대 2회)</span>
-                            <input type="number" id="ibkOver30kCount" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-bold mt-1" value="2" min="0" max="2" onchange="saveUserSettings()">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Shinhan Card Settings -->
-                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center space-x-2 font-bold text-blue-300 cursor-pointer">
-                            <input type="checkbox" id="ownShinhan" class="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0" checked onchange="saveUserSettings()">
-                            <span>신한 나라사랑카드</span>
-                        </label>
-                    </div>
-                    <div>
-                        <span class="text-[11px] text-slate-400">월 통합 잔여 한도 (최대 10만)</span>
-                        <input type="number" id="shinhanLimit" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-bold mt-1" value="100000" onchange="saveUserSettings()">
-                    </div>
-                </div>
-
-                <!-- Hana Card Settings -->
-                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center space-x-2 font-bold text-emerald-300 cursor-pointer">
-                            <input type="checkbox" id="ownHana" class="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0" checked onchange="saveUserSettings()">
-                            <span>하나 나라사랑카드</span>
-                        </label>
-                    </div>
-                    <div>
-                        <span class="text-[11px] text-slate-400">월 통합 잔여 한도 (최대 10만)</span>
-                        <input type="number" id="hanaLimit" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-bold mt-1" value="100000" onchange="saveUserSettings()">
-                    </div>
-                </div>
-            </div>
-
-            <div class="pt-2">
-                <button onclick="closeSettingsModal()" class="w-full py-2.5 bg-emerald-600 font-bold text-white rounded-xl text-xs">
-                    저장 및 닫기
-                </button>
-            </div>
-        </div>
+  <header>
+    <div class="header-title">
+      <span>🏋️ 3분할 파워빌딩</span>
+      <span class="badge">PRO</span>
     </div>
+    <button id="workoutTimerBtn" class="workout-timer-pill" title="운동 타이머 시작/일시정지">
+      <span id="workoutTimerDot">▶</span>
+      <span id="workoutTimerText">00:00</span>
+    </button>
+  </header>
 
-    <!-- 2. PX Catalog Modal (28+ Items, Search, Custom Add) -->
-    <div id="catalogModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-4 space-y-3 max-h-[90vh] flex flex-col">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h3 class="font-extrabold text-base text-white flex items-center gap-2">
-                    <i class="fa-solid fa-[#fa-store] fa-store text-emerald-400"></i>
-                    <span>PX 전체 품목 카탈로그</span>
-                </h3>
-                <button onclick="closeCatalogModal()" class="text-slate-400 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+  <main>
+    <!-- VIEW 1: WORKOUT -->
+    <section id="view-workout" class="view active">
+      <div class="day-tabs" id="dayTabs"></div>
 
-            <!-- Search Bar & Add Custom Trigger -->
-            <div class="flex space-x-2">
-                <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
-                    <input type="text" id="catalogSearchInput" oninput="renderCatalogItems()" placeholder="품목명 검색 (예: 만두, 수분크림)" class="w-full pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
-                </div>
-                <button onclick="toggleCustomItemForm()" class="px-3 py-1.5 bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-bold whitespace-nowrap">
-                    + 직접 추가
-                </button>
-            </div>
-
-            <!-- Custom Item Form (Collapsible) -->
-            <div id="customItemForm" class="hidden p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2 text-xs">
-                <div class="font-bold text-amber-300">신규 품목 직접 등록</div>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="customName" placeholder="품목명" class="bg-slate-900 border border-slate-700 px-2 py-1 rounded text-white">
-                    <input type="number" id="customPrice" placeholder="가격(원)" class="bg-slate-900 border border-slate-700 px-2 py-1 rounded text-white">
-                </div>
-                <div class="flex items-center justify-between pt-1">
-                    <select id="customCategory" class="bg-slate-900 border border-slate-700 px-2 py-1 rounded text-white">
-                        <option value="식품/냉동">식품/냉동</option>
-                        <option value="간식/음료">간식/음료</option>
-                        <option value="뷰티/생필품">뷰티/생필품</option>
-                    </select>
-                    <button onclick="addCustomCatalogItem()" class="px-3 py-1 bg-emerald-600 font-bold text-white rounded">등록</button>
-                </div>
-            </div>
-
-            <!-- Category Tabs -->
-            <div class="flex space-x-1 bg-slate-950 p-1 rounded-xl text-[11px] overflow-x-auto no-scrollbar">
-                <button onclick="setCategoryFilter('all')" class="cat-tab-btn active font-bold px-2.5 py-1 rounded-lg bg-emerald-600 text-white">전체</button>
-                <button onclick="setCategoryFilter('식품/냉동')" class="cat-tab-btn font-bold px-2.5 py-1 rounded-lg text-slate-400 hover:text-white">식품/냉동</button>
-                <button onclick="setCategoryFilter('간식/음료')" class="cat-tab-btn font-bold px-2.5 py-1 rounded-lg text-slate-400 hover:text-white">간식/음료</button>
-                <button onclick="setCategoryFilter('뷰티/생필품')" class="cat-tab-btn font-bold px-2.5 py-1 rounded-lg text-slate-400 hover:text-white">뷰티/생필품</button>
-            </div>
-
-            <!-- Catalog Items Scroll Area -->
-            <div id="catalogItemsList" class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[250px]">
-                <!-- Catalog items inserted via JS -->
-            </div>
+      <div class="summary-strip">
+        <div class="stat-box">
+          <div class="stat-label">완료 세트</div>
+          <div class="stat-val" id="sumSets">0 / 0</div>
         </div>
-    </div>
-
-    <!-- 3. Receipt 2-Split Guide Modal -->
-    <div id="splitGuideModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 class="font-extrabold text-base text-white flex items-center gap-2">
-                    <i class="fa-solid fa-[#fa-receipt] fa-receipt text-amber-400"></i>
-                    <span>영수증 2개 분리 계산 가이드</span>
-                </h3>
-                <button onclick="closeSplitGuideModal()" class="text-slate-400 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <p class="text-xs text-slate-400 leading-relaxed">
-                계산대에서 아래 안내대로 <strong class="text-emerald-400">물품을 나누어 2번 계산</strong>하시면 최대 할인 혜택을 100% 받으실 수 있습니다.
-            </p>
-
-            <div id="splitGuideContent" class="space-y-3 text-xs">
-                <!-- Receipt 1 & Receipt 2 split recommendations generated by JS -->
-            </div>
-
-            <button onclick="closeSplitGuideModal()" class="w-full py-2.5 bg-slate-800 font-bold text-slate-200 rounded-xl text-xs">
-                확인 및 닫기
-            </button>
+        <div class="stat-box">
+          <div class="stat-label">오늘 볼륨</div>
+          <div class="stat-val" id="sumVol">0 kg</div>
         </div>
-    </div>
-
-    <!-- 4. Limit Maximizer ("한도 털어먹기") Modal -->
-    <div id="limitMaximizerModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 class="font-extrabold text-base text-white flex items-center gap-2">
-                    <i class="fa-solid fa-bullseye text-amber-400"></i>
-                    <span>한도 털어먹기 (영끌 계산기)</span>
-                </h3>
-                <button onclick="closeLimitMaximizerModal()" class="text-slate-400 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div id="limitMaximizerContent" class="space-y-3 text-xs">
-                <!-- Limit calculation analysis JS output -->
-            </div>
-
-            <button onclick="closeLimitMaximizerModal()" class="w-full py-2.5 bg-slate-800 font-bold text-slate-200 rounded-xl text-xs">
-                닫기
-            </button>
+        <div class="stat-box">
+          <div class="stat-label">진행률</div>
+          <div class="stat-val" id="sumPct">0%</div>
         </div>
-    </div>
+      </div>
 
-    <!-- 5. History & Backup / Restore Modal -->
-    <div id="historyModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 class="font-extrabold text-base text-white flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i>
-                    <span>결제 이력 및 백업</span>
-                </h3>
-                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <!-- History List -->
-            <div class="space-y-2">
-                <h4 class="font-bold text-xs text-slate-300">최근 결제 영수증 내역</h4>
-                <div id="paymentHistoryList" class="space-y-2 max-h-48 overflow-y-auto text-xs pr-1">
-                    <!-- Dynamic history rows -->
-                </div>
-            </div>
-
-            <!-- Backup & Restore Actions -->
-            <div class="border-t border-slate-800 pt-3 space-y-2 text-xs">
-                <h4 class="font-bold text-slate-300">데이터 백업 & 복구</h4>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="exportDataJSON()" class="py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-semibold border border-slate-700">
-                        <i class="fa-solid fa-[#fa-download] fa-download mr-1"></i>백업 저장(JSON)
-                    </button>
-                    <label class="py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-semibold border border-slate-700 text-center cursor-pointer">
-                        <i class="fa-solid fa-[#fa-upload] fa-upload mr-1"></i>데이터 불러오기
-                        <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
-                    </label>
-                </div>
-                <button onclick="resetAllData()" class="w-full py-1.5 text-rose-400 hover:text-rose-300 text-[11px]">
-                    초기 상태로 데이터 리셋
-                </button>
-            </div>
+      <!-- Rest Timer Bar -->
+      <div id="restBar" class="rest-bar hidden">
+        <div>
+          <div style="font-size:0.7rem; color:var(--text-muted);">휴식 타이머</div>
+          <div id="restTimeDisplay" class="rest-time">01:30</div>
         </div>
-    </div>
+        <div class="rest-presets">
+          <button class="btn-mini" data-rest="60">60s</button>
+          <button class="btn-mini" data-rest="90">90s</button>
+          <button class="btn-mini" data-rest="120">2m</button>
+          <button class="btn-mini" data-rest="180">3m</button>
+          <button class="btn-mini danger" id="stopRestBtn">종료</button>
+        </div>
+      </div>
 
-    <!-- Application Script Logic -->
-    <script>
-        // Default standard 28+ PX items database
-        const DEFAULT_CATALOG = [
-            { id: 1, name: "몬테크리스토 샌드위치", price: 2800, category: "식품/냉동", fav: true },
-            { id: 2, name: "슈넬치킨", price: 3900, category: "식품/냉동", fav: true },
-            { id: 3, name: "CJ 비비고 왕교자", price: 4200, category: "식품/냉동", fav: false },
-            { id: 4, name: "오뚜기 컵밥 (불고기)", price: 2500, category: "식품/냉동", fav: false },
-            { id: 5, name: "빅팜 소세지", price: 1800, category: "식품/냉동", fav: true },
-            { id: 6, name: "면사랑 까르보나라", price: 3400, category: "식품/냉동", fav: false },
-            { id: 7, name: "홍진경 더만두", price: 2600, category: "식품/냉동", fav: false },
-            { id: 8, name: "딸기 몽쉘 통통 (6입)", price: 1900, category: "간식/음료", fav: true },
-            { id: 9, name: "포카리스웨트 500ml", price: 900, category: "간식/음료", fav: true },
-            { id: 10, name: "코카콜라 Zero 355ml", price: 850, category: "간식/음료", fav: false },
-            { id: 11, name: "닥터지 블랙스네일 크림", price: 7300, category: "뷰티/생필품", fav: true },
-            { id: 12, name: "닥터지 레드 블레미쉬 수분크림", price: 6800, category: "뷰티/생필품", fav: true },
-            { id: 13, name: "AHC 아이크림 30ml", price: 4900, category: "뷰티/생필품", fav: false },
-            { id: 14, name: "이니스프리 그린티 스킨", price: 5500, category: "뷰티/생필품", fav: false },
-            { id: 15, name: "독도 토너 200ml", price: 4200, category: "뷰티/생필품", fav: false },
-            { id: 16, name: "불닭볶음면 (용기)", price: 1100, category: "간식/음료", fav: false },
-            { id: 17, name: "신라면 컵", price: 950, category: "간식/음료", fav: false },
-            { id: 18, name: "몬스터 에너기 드링크", price: 1200, category: "간식/음료", fav: true },
-            { id: 19, name: "페레로로쉐 (3구)", price: 1500, category: "간식/음료", fav: false },
-            { id: 20, name: "크리스피 롤 12곡", price: 2100, category: "간식/음료", fav: false },
-            { id: 21, name: "카누 아메리카노 (30T)", price: 4500, category: "간식/음료", fav: false },
-            { id: 22, name: "질러 육포", price: 3200, category: "간식/음료", fav: false },
-            { id: 23, name: "우르오스 올인원 모이스처", price: 8900, category: "뷰티/생필품", fav: false },
-            { id: 24, name: "센카 클렌징 폼 120g", price: 3100, category: "뷰티/생필품", fav: false },
-            { id: 25, name: "가리스 포마드 왁스", price: 4800, category: "뷰티/생필품", fav: false },
-            { id: 26, name: "도루코 7중날 면도날(4입)", price: 8500, category: "뷰티/생필품", fav: false },
-            { id: 27, name: "리스테린 쿨민트 500ml", price: 3300, category: "뷰티/생필품", fav: false },
-            { id: 28, name: "페브리즈 탈취제 370ml", price: 3600, category: "뷰티/생필품", fav: false }
+      <div id="exerciseList"></div>
+
+      <div class="action-stack">
+        <button class="btn btn-secondary" id="openAddExModalBtn">+ 종목 추가</button>
+        <button class="btn btn-success" id="finishWorkoutBtn">운동 완료 및 기록 저장</button>
+      </div>
+    </section>
+
+    <!-- VIEW 2: RUNNING -->
+    <section id="view-running" class="view">
+      <div class="card">
+        <div class="card-title">
+          <span id="runMonthLabel">이번 달 러닝 누적</span>
+          <button class="btn-mini" id="editRunGoalBtn">목표 수정</button>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:8px;">
+          <div class="big-num pink" id="runMonthTotal">0.0 km</div>
+          <div style="font-size:0.85rem; color:var(--text-muted);" id="runGoalText">/ 목표 100 km</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill run" id="runProgress" style="width:0%"></div>
+        </div>
+        <div style="font-size:0.76rem; color:var(--text-muted);" id="runRemainText">
+          목표까지 100.0 km 남았습니다.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">러닝 기록 추가</div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>날짜</label>
+            <input type="date" id="runDate" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>거리 (km)</label>
+            <input type="number" id="runDist" class="form-control" step="0.01" placeholder="예: 3.0" inputmode="decimal" />
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>시간 (분)</label>
+            <input type="number" id="runMin" class="form-control" placeholder="예: 12" inputmode="numeric" />
+          </div>
+          <div class="form-group">
+            <label>시간 (초)</label>
+            <input type="number" id="runSec" class="form-control" placeholder="예: 30" inputmode="numeric" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>메모 (선택)</label>
+          <input type="text" id="runNote" class="form-control" placeholder="예: 3km 측정 / 10km 페이스주" />
+        </div>
+        <div class="pace-preview" id="pacePreview">평균 페이스: -'--" /km</div>
+        <button class="btn btn-primary" id="saveRunBtn">러닝 기록 저장</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>최근 러닝 기록</span>
+          <span id="runCount" style="font-size:0.78rem; color:var(--text-muted);">총 0회</span>
+        </div>
+        <div id="runHistoryList"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: CALENDAR & HISTORY -->
+    <section id="view-history" class="view">
+      <div class="card">
+        <div class="cal-header">
+          <button class="btn-mini" id="calPrevBtn">◀</button>
+          <div class="cal-month" id="calMonthTitle">2026년 11월</div>
+          <button class="btn-mini" id="calNextBtn">▶</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend">
+          <span><i class="dot d1"></i>Day 1 (가슴)</span>
+          <span><i class="dot d2"></i>Day 2 (등)</span>
+          <span><i class="dot d3"></i>Day 3 (하체)</span>
+          <span><i class="dot run"></i>러닝</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>웨이트 운동 기록</span>
+          <span id="historyCount" style="font-size:0.8rem; color:var(--text-muted);">총 0회</span>
+        </div>
+        <div id="historyList"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: STATS & BIG 3 -->
+    <section id="view-stats" class="view">
+      <div class="card">
+        <div class="card-title">
+          <span>3대 합계 (추정 1RM 기준)</span>
+          <button class="btn-mini" id="editGoalBtn">목표 수정</button>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:8px;">
+          <div class="big-num" id="big3Total">0 kg</div>
+          <div style="font-size:0.85rem; color:var(--text-muted);" id="big3GoalText">/ 목표 500 kg</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="big3Progress" style="width:0%"></div>
+        </div>
+        <div style="font-size:0.76rem; color:var(--text-muted);" id="big3Remain">
+          기록이 쌓이면 자동으로 최고 1RM이 반영됩니다.
+        </div>
+
+        <div class="lift-grid" id="big3Grid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>최근 볼륨 추이 (kg)</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">최근 10회</span>
+        </div>
+        <div id="volumeChartContainer"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: SETTINGS & DATA -->
+    <section id="view-settings" class="view">
+      <div class="card">
+        <div class="card-title">휴식 타이머 기본 시간</div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;" id="defaultRestOptions">
+          <button class="btn-mini" data-default-rest="60">60초</button>
+          <button class="btn-mini" data-default-rest="90">90초</button>
+          <button class="btn-mini" data-default-rest="120">120초</button>
+          <button class="btn-mini" data-default-rest="180">180초</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">데이터 백업 및 복원</div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0;">
+          모든 웨이트·러닝 기록은 브라우저(LocalStorage)에 저장됩니다. 기기 변경 전 JSON 파일로 백업해 두세요.
+        </p>
+        <div class="action-stack">
+          <button class="btn btn-primary" id="exportDataBtn">JSON 백업 파일 다운로드</button>
+          <button class="btn btn-secondary" id="importDataBtn">JSON 백업 파일 불러오기</button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none;" />
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">루틴 초기화</div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0;">
+          현재 편집된 루틴을 PDF 원본 3분할 파워빌딩 루틴으로 되돌립니다. (저장된 운동·러닝 기록은 유지됩니다)
+        </p>
+        <button class="btn btn-danger" id="resetRoutineBtn">원본 루틴으로 복원</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-view="workout">
+      <span class="nav-icon">💪</span>
+      <span>운동</span>
+    </button>
+    <button class="nav-btn" data-view="running">
+      <span class="nav-icon">🏃</span>
+      <span>러닝</span>
+    </button>
+    <button class="nav-btn" data-view="history">
+      <span class="nav-icon">📅</span>
+      <span>캘린더</span>
+    </button>
+    <button class="nav-btn" data-view="stats">
+      <span class="nav-icon">📊</span>
+      <span>3대/통계</span>
+    </button>
+    <button class="nav-btn" data-view="settings">
+      <span class="nav-icon">⚙️</span>
+      <span>관리</span>
+    </button>
+  </nav>
+
+  <!-- Add Exercise Modal -->
+  <div id="addExModal" class="modal-backdrop">
+    <div class="modal">
+      <h3>새 종목 추가</h3>
+      <div class="form-group">
+        <label>종목명</label>
+        <input type="text" id="newExName" class="form-control" placeholder="예: 케이블 크로스오버" />
+      </div>
+      <div class="form-group">
+        <label>기본 중량 (kg, 맨몸이면 0)</label>
+        <input type="number" id="newExWeight" class="form-control" value="20" step="0.5" />
+      </div>
+      <div class="form-group">
+        <label>기본 횟수 / 세트 수</label>
+        <div class="form-row-2">
+          <input type="number" id="newExReps" class="form-control" value="10" placeholder="횟수" />
+          <input type="number" id="newExSets" class="form-control" value="4" placeholder="세트 수" />
+        </div>
+      </div>
+      <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="newExMain" />
+        <label for="newExMain" style="margin:0;">메인 종목(파워 리프트)으로 표시</label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="closeAddExModalBtn">취소</button>
+        <button class="btn btn-primary" id="confirmAddExBtn">추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // =========================================================
+    // 1. DEFAULT ROUTINE (Parsed from User's PDF)
+    // =========================================================
+    const DEFAULT_ROUTINES = {
+      day1: {
+        id: 'day1',
+        title: 'Day 1',
+        subtitle: '가슴 / 삼두 + 복근',
+        exercises: [
+          {
+            id: 'd1-bench',
+            name: '바벨 벤치프레스',
+            isMain: true,
+            big3Key: 'bench',
+            note: '메인 종목',
+            sets: [
+              { weight: 60, reps: 8, rpe: '', done: false },
+              { weight: 70, reps: 8, rpe: '', done: false },
+              { weight: 80, reps: 3, rpe: '', done: false },
+              { weight: 70, reps: 8, rpe: '', done: false },
+              { weight: 60, reps: 6, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd1-inc-db',
+            name: '인클라인 덤벨 프레스',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 20, reps: 10, rpe: '', done: false },
+              { weight: 20, reps: 10, rpe: '', done: false },
+              { weight: 20, reps: 10, rpe: '', done: false },
+              { weight: 20, reps: 10, rpe: '', done: false },
+              { weight: 20, reps: 13, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd1-inc-bb',
+            name: '인클라인 벤치프레스',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 60, reps: 8, rpe: '', done: false },
+              { weight: 60, reps: 8, rpe: '', done: false },
+              { weight: 60, reps: 8, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd1-pec',
+            name: '펙덱 플라이',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 50, reps: 10, rpe: '', done: false },
+              { weight: 50, reps: 10, rpe: '', done: false },
+              { weight: 50, reps: 10, rpe: '', done: false },
+              { weight: 50, reps: 8, rpe: '', done: false },
+              { weight: 50, reps: 8, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd1-dips',
+            name: '딥스 (맨몸/중량)',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 43, reps: 10, rpe: '', done: false },
+              { weight: 43, reps: 10, rpe: '', done: false },
+              { weight: 43, reps: 10, rpe: '', done: false },
+              { weight: 43, reps: 10, rpe: '', done: false },
+              { weight: 43, reps: 10, rpe: '', done: false },
+              { weight: 43, reps: 10, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd1-tri',
+            name: '삼두 오버헤드 익스텐션',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 20, reps: 12, rpe: '', done: false },
+              { weight: 20, reps: 12, rpe: '', done: false },
+              { weight: 20, reps: 12, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd1-abs',
+            name: '복근 (레그레이즈)',
+            isMain: false,
+            note: '맨몸',
+            sets: [
+              { weight: 0, reps: 25, rpe: '', done: false },
+              { weight: 0, reps: 20, rpe: '', done: false },
+              { weight: 0, reps: 20, rpe: '', done: false }
+            ]
+          }
+        ]
+      },
+      day2: {
+        id: 'day2',
+        title: 'Day 2',
+        subtitle: '등 / 이두 + 복근',
+        exercises: [
+          {
+            id: 'd2-dead',
+            name: '땅 데드리프트',
+            isMain: true,
+            big3Key: 'deadlift',
+            note: '메인 종목',
+            sets: [
+              { weight: 100, reps: 5, rpe: '', done: false },
+              { weight: 140, reps: 3, rpe: '', done: false },
+              { weight: 140, reps: 2, rpe: '', done: false },
+              { weight: 140, reps: 2, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd2-pullup',
+            name: '턱걸이 (나사 3)',
+            isMain: false,
+            note: '기준 50',
+            sets: [
+              { weight: 50, reps: 10, rpe: '', done: false },
+              { weight: 50, reps: 10, rpe: '', done: false },
+              { weight: 50, reps: 9, rpe: '', done: false },
+              { weight: 50, reps: 8, rpe: '', done: false },
+              { weight: 50, reps: 8, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd2-row',
+            name: '로우',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 50, reps: 10, rpe: '', done: false },
+              { weight: 50, reps: 10, rpe: '', done: false },
+              { weight: 50, reps: 10, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd2-onearm',
+            name: '원암 덤벨 로우',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 30, reps: 10, rpe: '', done: false },
+              { weight: 30, reps: 10, rpe: '', done: false },
+              { weight: 30, reps: 10, rpe: '', done: false },
+              { weight: 30, reps: 10, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd2-lat',
+            name: '렛풀다운',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 45, reps: 8, rpe: '', done: false },
+              { weight: 45, reps: 8, rpe: '', done: false },
+              { weight: 45, reps: 8, rpe: '', done: false },
+              { weight: 45, reps: 8, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd2-bbcurl',
+            name: '바벨 컬',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 25, reps: 10, rpe: '', done: false },
+              { weight: 25, reps: 10, rpe: '', done: false },
+              { weight: 25, reps: 10, rpe: '', done: false },
+              { weight: 25, reps: 10, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd2-dbcurl',
+            name: '덤벨 컬',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 7, reps: 14, rpe: '', done: false },
+              { weight: 7, reps: 14, rpe: '', done: false },
+              { weight: 7, reps: 14, rpe: '', done: false },
+              { weight: 7, reps: 14, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd2-hammer',
+            name: '해머 컬',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 7, reps: 10, rpe: '', done: false },
+              { weight: 7, reps: 10, rpe: '', done: false },
+              { weight: 7, reps: 10, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd2-abs',
+            name: '복근 (레그레이즈)',
+            isMain: false,
+            note: '맨몸',
+            sets: [
+              { weight: 0, reps: 20, rpe: '', done: false },
+              { weight: 0, reps: 20, rpe: '', done: false },
+              { weight: 0, reps: 20, rpe: '', done: false },
+              { weight: 0, reps: 20, rpe: '', done: false }
+            ]
+          }
+        ]
+      },
+      day3: {
+        id: 'day3',
+        title: 'Day 3',
+        subtitle: '하체 / 어깨 + 복근',
+        exercises: [
+          {
+            id: 'd3-legcurl',
+            name: '레그컬',
+            isMain: false,
+            note: '선피로 / 웜업',
+            sets: [
+              { weight: 30, reps: 12, rpe: '', done: false },
+              { weight: 30, reps: 12, rpe: '', done: false },
+              { weight: 30, reps: 12, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd3-squat',
+            name: '바벨 스쿼트',
+            isMain: true,
+            big3Key: 'squat',
+            note: '메인 종목',
+            sets: [
+              { weight: 60, reps: 5, rpe: '', done: false },
+              { weight: 100, reps: 5, rpe: '', done: false },
+              { weight: 100, reps: 5, rpe: '', done: false },
+              { weight: 100, reps: 4, rpe: '', done: false },
+              { weight: 100, reps: 4, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd3-ohp',
+            name: '밀리터리 프레스 (OHP)',
+            isMain: true,
+            big3Key: 'ohp',
+            note: '메인 종목',
+            sets: [
+              { weight: 40, reps: 10, rpe: '', done: false },
+              { weight: 50, reps: 4, rpe: '', done: false },
+              { weight: 40, reps: 8, rpe: '', done: false },
+              { weight: 40, reps: 8, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd3-legpress',
+            name: '레그프레스',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 100, reps: 12, rpe: '', done: false },
+              { weight: 100, reps: 12, rpe: '', done: false },
+              { weight: 100, reps: 12, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd3-bss',
+            name: '불가리안 스플릿 스쿼트',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 11, reps: 10, rpe: '', done: false },
+              { weight: 14, reps: 14, rpe: '', done: false },
+              { weight: 14, reps: 10, rpe: '', done: false },
+              { weight: 14, reps: 10, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd3-msp',
+            name: '머신 숄더 프레스',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 40, reps: 10, rpe: '', done: false },
+              { weight: 60, reps: 10, rpe: '', done: false },
+              { weight: 60, reps: 10, rpe: '', done: false },
+              { weight: 60, reps: 10, rpe: '', done: false },
+              { weight: 60, reps: 10, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd3-slr',
+            name: '사이드 레터럴 레이즈',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 4, reps: 25, rpe: '', done: false },
+              { weight: 4, reps: 25, rpe: '', done: false },
+              { weight: 4, reps: 25, rpe: '', done: false },
+              { weight: 4, reps: 25, rpe: '', done: false },
+              { weight: 4, reps: 25, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd3-rear',
+            name: '후면 (리어 델트)',
+            isMain: false,
+            note: '',
+            sets: [
+              { weight: 25, reps: 15, rpe: '', done: false },
+              { weight: 25, reps: 15, rpe: '', done: false },
+              { weight: 25, reps: 15, rpe: '', done: false }
+            ]
+          },
+          {
+            id: 'd3-abs',
+            name: '복근 (레그레이즈)',
+            isMain: false,
+            note: '맨몸',
+            sets: [
+              { weight: 0, reps: 25, rpe: '', done: false },
+              { weight: 0, reps: 25, rpe: '', done: false },
+              { weight: 0, reps: 25, rpe: '', done: false }
+            ]
+          }
+        ]
+      }
+    };
+
+    const STORAGE_KEY = 'powerbuilding_3split_v2';
+
+    // =========================================================
+    // 2. STATE MANAGEMENT
+    // =========================================================
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('powerbuilding_3split_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (!parsed.runs) parsed.runs = [];
+          if (!parsed.settings) parsed.settings = {};
+          if (!parsed.settings.defaultRestSec) parsed.settings.defaultRestSec = 90;
+          if (!parsed.settings.big3Goal) parsed.settings.big3Goal = 500;
+          if (!parsed.settings.monthlyRunGoal) parsed.settings.monthlyRunGoal = 100;
+          return parsed;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return {
+        activeDay: 'day1',
+        routines: JSON.parse(JSON.stringify(DEFAULT_ROUTINES)),
+        history: [],
+        runs: [],
+        settings: {
+          defaultRestSec: 90,
+          big3Goal: 500,
+          monthlyRunGoal: 100
+        }
+      };
+    }
+
+    let state = loadState();
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    // Calendar viewing month
+    let calYear = new Date().getFullYear();
+    let calMonth = new Date().getMonth(); // 0-indexed
+
+    // Timers
+    let workoutSec = 0;
+    let workoutInterval = null;
+    let restRemaining = 0;
+    let restInterval = null;
+
+    // =========================================================
+    // 3. UTILITIES
+    // =========================================================
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function todayISO() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function calcEpley1RM(weight, reps) {
+      const w = Number(weight) || 0;
+      const r = Number(reps) || 0;
+      if (w <= 0 || r <= 0) return 0;
+      if (r === 1) return w;
+      return Math.round(w * (1 + r / 30));
+    }
+
+    function roundTo2_5(val) {
+      return Math.max(20, Math.round(val / 2.5) * 2.5);
+    }
+
+    function calcPaceStr(distKm, totalSec) {
+      if (!distKm || distKm <= 0 || !totalSec || totalSec <= 0) return `-'--" /km`;
+      const paceSec = Math.round(totalSec / distKm);
+      const m = Math.floor(paceSec / 60);
+      const s = String(paceSec % 60).padStart(2, '0');
+      return `${m}'${s}" /km`;
+    }
+
+    function playBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.25);
+        if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+      } catch (e) {}
+    }
+
+    // Lookup previous session sets & all-time best 1RM for an exercise
+    function getExerciseHistoryStats(exName) {
+      let prevSets = null;
+      let best1RM = 0;
+      let bestWeight = 0;
+
+      for (const h of state.history) {
+        const found = h.exercises.find(e => e.name === exName);
+        if (found) {
+          if (!prevSets) {
+            prevSets = found.sets.filter(s => !s.isWarmup);
+          }
+          found.sets.forEach(s => {
+            if (s.isWarmup) return;
+            const rm = calcEpley1RM(s.weight, s.reps);
+            if (rm > best1RM) best1RM = rm;
+            if ((Number(s.weight) || 0) > bestWeight) bestWeight = Number(s.weight) || 0;
+          });
+        }
+      }
+      return { prevSets, best1RM, bestWeight };
+    }
+
+    // =========================================================
+    // 4. WORKOUT & REST TIMERS
+    // =========================================================
+    const workoutTimerBtn = document.getElementById('workoutTimerBtn');
+    const workoutTimerDot = document.getElementById('workoutTimerDot');
+    const workoutTimerText = document.getElementById('workoutTimerText');
+
+    function toggleWorkoutTimer() {
+      if (workoutInterval) {
+        clearInterval(workoutInterval);
+        workoutInterval = null;
+        workoutTimerBtn.classList.remove('running');
+        workoutTimerDot.textContent = '▶';
+      } else {
+        workoutTimerBtn.classList.add('running');
+        workoutTimerDot.textContent = '⏸';
+        workoutInterval = setInterval(() => {
+          workoutSec++;
+          workoutTimerText.textContent = formatTime(workoutSec);
+        }, 1000);
+      }
+    }
+
+    workoutTimerBtn.addEventListener('click', toggleWorkoutTimer);
+
+    function startRestTimer(seconds) {
+      clearInterval(restInterval);
+      restRemaining = seconds;
+      const bar = document.getElementById('restBar');
+      const disp = document.getElementById('restTimeDisplay');
+      bar.classList.remove('hidden');
+      disp.textContent = formatTime(restRemaining);
+
+      restInterval = setInterval(() => {
+        restRemaining--;
+        if (restRemaining <= 0) {
+          clearInterval(restInterval);
+          restInterval = null;
+          disp.textContent = '00:00';
+          playBeep();
+          showToast('휴식 완료! 다음 세트 시작하세요 💪');
+          setTimeout(() => bar.classList.add('hidden'), 1800);
+        } else {
+          disp.textContent = formatTime(restRemaining);
+        }
+      }, 1000);
+    }
+
+    document.getElementById('stopRestBtn').addEventListener('click', () => {
+      clearInterval(restInterval);
+      restInterval = null;
+      document.getElementById('restBar').classList.add('hidden');
+    });
+
+    document.querySelectorAll('[data-rest]').forEach(btn => {
+      btn.addEventListener('click', () => startRestTimer(Number(btn.dataset.rest)));
+    });
+
+    // =========================================================
+    // 5. RENDER WORKOUT VIEW
+    // =========================================================
+    function renderDayTabs() {
+      const wrap = document.getElementById('dayTabs');
+      wrap.innerHTML = '';
+      Object.values(state.routines).forEach(day => {
+        const div = document.createElement('div');
+        div.className = `day-tab ${state.activeDay === day.id ? 'active' : ''}`;
+        div.innerHTML = `
+          <div class="day-num">${day.title}</div>
+          <div class="day-sub">${day.subtitle}</div>
+        `;
+        div.addEventListener('click', () => {
+          state.activeDay = day.id;
+          saveState();
+          renderWorkout();
+        });
+        wrap.appendChild(div);
+      });
+    }
+
+    function updateSummaryStrip() {
+      const day = state.routines[state.activeDay];
+      let totalSets = 0;
+      let doneSets = 0;
+      let vol = 0;
+
+      day.exercises.forEach(ex => {
+        ex.sets.forEach(s => {
+          totalSets++;
+          if (s.done) {
+            doneSets++;
+            vol += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+          }
+        });
+      });
+
+      const pct = totalSets > 0 ? Math.round((doneSets / totalSets) * 100) : 0;
+      document.getElementById('sumSets').textContent = `${doneSets} / ${totalSets}`;
+      document.getElementById('sumVol').textContent = `${vol.toLocaleString()} kg`;
+      document.getElementById('sumPct').textContent = `${pct}%`;
+    }
+
+    const RPE_OPTIONS = ['', '6', '7', '7.5', '8', '8.5', '9', '9.5', '10'];
+
+    function renderWorkout() {
+      renderDayTabs();
+      updateSummaryStrip();
+
+      const list = document.getElementById('exerciseList');
+      list.innerHTML = '';
+      const day = state.routines[state.activeDay];
+
+      day.exercises.forEach((ex, exIdx) => {
+        const card = document.createElement('div');
+        card.className = `exercise-card ${ex.isMain ? 'is-main' : ''}`;
+
+        const hist = getExerciseHistoryStats(ex.name);
+        const currentMax1RM = Math.max(0, ...ex.sets.filter(s => !s.isWarmup).map(s => calcEpley1RM(s.weight, s.reps)));
+        const doneMax1RM = Math.max(0, ...ex.sets.filter(s => s.done && !s.isWarmup).map(s => calcEpley1RM(s.weight, s.reps)));
+        const isNewPR = hist.best1RM > 0 && doneMax1RM > hist.best1RM;
+
+        const exVol = ex.sets.reduce((acc, s) => acc + (s.done ? (Number(s.weight) || 0) * (Number(s.reps) || 0) : 0), 0);
+
+        let setsHtml = `
+          <div class="set-header">
+            <div>세트</div>
+            <div>중량(kg)</div>
+            <div>횟수</div>
+            <div>RPE</div>
+            <div>완료</div>
+            <div></div>
+          </div>
+        `;
+
+        let workingIdx = 0;
+        ex.sets.forEach((s, sIdx) => {
+          const isW = Boolean(s.isWarmup);
+          const label = isW ? 'W' : ++workingIdx;
+
+          // Previous record hint for working sets
+          let prevHtml = '';
+          if (!isW && hist.prevSets && hist.prevSets[workingIdx - 1]) {
+            const p = hist.prevSets[workingIdx - 1];
+            const beat = (Number(s.weight) > Number(p.weight)) || (Number(s.weight) === Number(p.weight) && Number(s.reps) > Number(p.reps));
+            prevHtml = `
+              <div class="prev-hint">
+                <span>직전: ${p.weight}kg × ${p.reps}${p.rpe ? ` @${p.rpe}` : ''}</span>
+                ${beat && s.done ? '<span class="beat">▲ 기록 경신!</span>' : ''}
+              </div>
+            `;
+          }
+
+          const rpeOptsHtml = RPE_OPTIONS.map(opt =>
+            `<option value="${opt}" ${String(s.rpe || '') === opt ? 'selected' : ''}>${opt === '' ? '-' : opt}</option>`
+          ).join('');
+
+          setsHtml += `
+            <div class="set-block ${s.done ? 'done' : ''} ${isW ? 'warmup' : ''}" data-ex="${exIdx}" data-set="${sIdx}">
+              <div class="set-row">
+                <div class="set-num ${isW ? 'w-label' : ''}">${label}</div>
+                <input type="number" step="0.5" class="set-input" data-field="weight" value="${s.weight}" inputmode="decimal" />
+                <input type="number" class="set-input" data-field="reps" value="${s.reps}" inputmode="numeric" />
+                <select class="rpe-select" data-field="rpe">${rpeOptsHtml}</select>
+                <button class="check-btn" data-action="toggle-done">${s.done ? '✓' : ''}</button>
+                <button class="del-set-btn" data-action="del-set" title="세트 삭제">×</button>
+              </div>
+              ${prevHtml}
+            </div>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="ex-header">
+            <div class="ex-title-wrap">
+              <div class="ex-title">
+                <span>${ex.name}</span>
+                ${ex.isMain ? '<span class="main-tag">MAIN</span>' : ''}
+                ${isNewPR ? '<span class="pr-badge">NEW PR 🔥</span>' : ''}
+              </div>
+              <div class="ex-meta">
+                완료 볼륨 ${exVol.toLocaleString()} kg ${currentMax1RM > 0 ? `· 추정 1RM ${currentMax1RM} kg` : ''}
+                ${hist.best1RM > 0 ? ` (최고 ${hist.best1RM} kg)` : ''}
+              </div>
+            </div>
+            <div class="ex-actions">
+              ${ex.isMain ? `<button class="btn-mini accent" data-action="gen-warmup" data-ex="${exIdx}">🔥 웜업</button>` : ''}
+              <button class="btn-mini danger" data-action="del-ex" data-ex="${exIdx}">삭제</button>
+            </div>
+          </div>
+          ${setsHtml}
+          <div class="ex-footer">
+            <button class="btn-mini" data-action="add-set" data-ex="${exIdx}">+ 세트 추가</button>
+            <button class="btn-mini" data-action="start-rest">⏱ 휴식 ${state.settings.defaultRestSec}s</button>
+          </div>
+          <input type="text" class="note-input" data-action="edit-note" data-ex="${exIdx}" placeholder="메모 (그립, 컨디션, 머신 세팅 등)" value="${ex.note || ''}" />
+        `;
+
+        list.appendChild(card);
+      });
+    }
+
+    // Event Delegation for Exercise List
+    document.getElementById('exerciseList').addEventListener('input', e => {
+      const target = e.target;
+      const day = state.routines[state.activeDay];
+
+      if (target.classList.contains('set-input')) {
+        const block = target.closest('.set-block');
+        const exIdx = Number(block.dataset.ex);
+        const setIdx = Number(block.dataset.set);
+        const field = target.dataset.field;
+        day.exercises[exIdx].sets[setIdx][field] = Number(target.value) || 0;
+        saveState();
+        updateSummaryStrip();
+      } else if (target.dataset.action === 'edit-note') {
+        const exIdx = Number(target.dataset.ex);
+        day.exercises[exIdx].note = target.value;
+        saveState();
+      }
+    });
+
+    document.getElementById('exerciseList').addEventListener('change', e => {
+      const target = e.target;
+      if (target.classList.contains('rpe-select')) {
+        const block = target.closest('.set-block');
+        const exIdx = Number(block.dataset.ex);
+        const setIdx = Number(block.dataset.set);
+        state.routines[state.activeDay].exercises[exIdx].sets[setIdx].rpe = target.value;
+        saveState();
+      }
+    });
+
+    document.getElementById('exerciseList').addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const day = state.routines[state.activeDay];
+
+      if (action === 'toggle-done') {
+        const block = btn.closest('.set-block');
+        const exIdx = Number(block.dataset.ex);
+        const setIdx = Number(block.dataset.set);
+        const setObj = day.exercises[exIdx].sets[setIdx];
+        setObj.done = !setObj.done;
+        if (setObj.done) {
+          if (!workoutInterval && workoutSec === 0) toggleWorkoutTimer();
+          startRestTimer(state.settings.defaultRestSec);
+        }
+        saveState();
+        renderWorkout();
+      } else if (action === 'del-set') {
+        const block = btn.closest('.set-block');
+        const exIdx = Number(block.dataset.ex);
+        const setIdx = Number(block.dataset.set);
+        day.exercises[exIdx].sets.splice(setIdx, 1);
+        saveState();
+        renderWorkout();
+      } else if (action === 'add-set') {
+        const exIdx = Number(btn.dataset.ex);
+        const sets = day.exercises[exIdx].sets;
+        const last = sets[sets.length - 1] || { weight: 20, reps: 10 };
+        sets.push({ weight: last.weight, reps: last.reps, rpe: '', done: false });
+        saveState();
+        renderWorkout();
+      } else if (action === 'gen-warmup') {
+        const exIdx = Number(btn.dataset.ex);
+        const ex = day.exercises[exIdx];
+        const maxW = Math.max(40, ...ex.sets.filter(s => !s.isWarmup).map(s => Number(s.weight) || 0));
+        const input = prompt(`'${ex.name}' 본세트 목표 중량(kg)을 입력하세요.\n(50%×8, 70%×5, 85%×2 자동 생성)`, maxW);
+        if (!input || isNaN(Number(input)) || Number(input) <= 0) return;
+        const targetW = Number(input);
+
+        // Remove existing warmups first
+        ex.sets = ex.sets.filter(s => !s.isWarmup);
+        const warmups = [
+          { weight: roundTo2_5(targetW * 0.5), reps: 8, rpe: '', done: false, isWarmup: true },
+          { weight: roundTo2_5(targetW * 0.7), reps: 5, rpe: '', done: false, isWarmup: true },
+          { weight: roundTo2_5(targetW * 0.85), reps: 2, rpe: '', done: false, isWarmup: true }
         ];
-
-        // Global State Object
-        let state = {
-            isSplitPayment: true, // Split payment toggle state (Key User Request)
-            isPaydayMode: false,  // Payday 10th mode toggle state
-            userCards: {
-                ibk: { own: true, salaryTransfer: true, over30kLimit: 50000, over30kCount: 2 },
-                shinhan: { own: true, limit: 100000 },
-                hana: { own: true, limit: 100000 }
-            },
-            cart: [], // Items in shopping cart: [{ id, name, price, qty }]
-            catalog: [], // PX catalog items
-            history: [], // Completed payment receipt history
-            activeCategoryFilter: 'all'
-        };
-
-        // Initialize App on DOM Load
-        window.onload = function() {
-            loadLocalStorage();
-            renderAll();
-        };
-
-        // Save State to LocalStorage
-        function saveState() {
-            localStorage.setItem('px_cardmaster_state_v2', JSON.stringify(state));
+        ex.sets.unshift(...warmups);
+        saveState();
+        renderWorkout();
+        showToast(`${targetW}kg 기준 웜업 3세트가 추가되었습니다.`);
+      } else if (action === 'del-ex') {
+        const exIdx = Number(btn.dataset.ex);
+        if (confirm(`'${day.exercises[exIdx].name}' 종목을 삭제할까요?`)) {
+          day.exercises.splice(exIdx, 1);
+          saveState();
+          renderWorkout();
         }
+      } else if (action === 'start-rest') {
+        startRestTimer(state.settings.defaultRestSec);
+      }
+    });
 
-        // Load State from LocalStorage
-        function loadLocalStorage() {
-            const saved = localStorage.getItem('px_cardmaster_state_v2');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    state = { ...state, ...parsed };
-                } catch(e) {
-                    console.error("Failed to parse saved state", e);
-                    state.catalog = [...DEFAULT_CATALOG];
-                }
-            } else {
-                state.catalog = [...DEFAULT_CATALOG];
-            }
+    // Add Exercise Modal
+    const addExModal = document.getElementById('addExModal');
+    document.getElementById('openAddExModalBtn').addEventListener('click', () => {
+      document.getElementById('newExName').value = '';
+      addExModal.classList.add('open');
+    });
+    document.getElementById('closeAddExModalBtn').addEventListener('click', () => {
+      addExModal.classList.remove('open');
+    });
+    document.getElementById('confirmAddExBtn').addEventListener('click', () => {
+      const name = document.getElementById('newExName').value.trim();
+      if (!name) return showToast('종목명을 입력하세요.');
+      const weight = Number(document.getElementById('newExWeight').value) || 0;
+      const reps = Number(document.getElementById('newExReps').value) || 10;
+      const setCount = Math.max(1, Math.min(12, Number(document.getElementById('newExSets').value) || 3));
+      const isMain = document.getElementById('newExMain').checked;
+
+      const sets = Array.from({ length: setCount }, () => ({ weight, reps, rpe: '', done: false }));
+      state.routines[state.activeDay].exercises.push({
+        id: 'ex-' + Date.now(),
+        name,
+        isMain,
+        note: '',
+        sets
+      });
+      saveState();
+      addExModal.classList.remove('open');
+      renderWorkout();
+      showToast(`'${name}' 추가됨`);
+    });
+
+    // Finish Workout & Save to History
+    document.getElementById('finishWorkoutBtn').addEventListener('click', () => {
+      const day = state.routines[state.activeDay];
+      const completedExercises = [];
+      let totalVol = 0;
+      let totalSets = 0;
+
+      day.exercises.forEach(ex => {
+        const doneSets = ex.sets.filter(s => s.done);
+        if (doneSets.length > 0) {
+          totalSets += doneSets.length;
+          doneSets.forEach(s => {
+            totalVol += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+          });
+          completedExercises.push({
+            name: ex.name,
+            big3Key: ex.big3Key || null,
+            sets: doneSets.map(s => ({
+              weight: s.weight,
+              reps: s.reps,
+              rpe: s.rpe || '',
+              isWarmup: Boolean(s.isWarmup)
+            }))
+          });
         }
+      });
 
-        // Main Render Controller
-        function renderAll() {
-            renderTogglesUI();
-            renderCartUI();
-            renderQuickFavoritesUI();
-            renderCardLimitsStatusUI();
-            calculateAndRenderRecommendation();
+      if (completedExercises.length === 0) {
+        return showToast('완료 체크된 세트가 없습니다.');
+      }
+
+      const now = new Date();
+      const dateISO = todayISO();
+      const dateStr = `${dateISO} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      state.history.unshift({
+        id: Date.now(),
+        date: dateStr,
+        dateISO,
+        dayId: day.id,
+        dayTitle: `${day.title} (${day.subtitle})`,
+        durationSec: workoutSec,
+        totalVol,
+        totalSets,
+        exercises: completedExercises
+      });
+
+      // Reset checkmarks & remove temporary warmup sets for next session
+      day.exercises.forEach(ex => {
+        ex.sets = ex.sets.filter(s => !s.isWarmup);
+        ex.sets.forEach(s => { s.done = false; });
+      });
+
+      if (workoutInterval) toggleWorkoutTimer();
+      workoutSec = 0;
+      workoutTimerText.textContent = '00:00';
+
+      saveState();
+      renderWorkout();
+      showToast('오늘 운동 기록이 저장되었습니다! 🔥');
+    });
+
+    // =========================================================
+    // 6. RUNNING TRACKER VIEW
+    // =========================================================
+    const runDateEl = document.getElementById('runDate');
+    const runDistEl = document.getElementById('runDist');
+    const runMinEl = document.getElementById('runMin');
+    const runSecEl = document.getElementById('runSec');
+    const runNoteEl = document.getElementById('runNote');
+    const pacePreviewEl = document.getElementById('pacePreview');
+
+    runDateEl.value = todayISO();
+
+    function updatePacePreview() {
+      const dist = Number(runDistEl.value) || 0;
+      const totalSec = (Number(runMinEl.value) || 0) * 60 + (Number(runSecEl.value) || 0);
+      pacePreviewEl.textContent = `평균 페이스: ${calcPaceStr(dist, totalSec)}`;
+    }
+
+    [runDistEl, runMinEl, runSecEl].forEach(el => el.addEventListener('input', updatePacePreview));
+
+    document.getElementById('saveRunBtn').addEventListener('click', () => {
+      const dateISO = runDateEl.value || todayISO();
+      const dist = Number(runDistEl.value) || 0;
+      const totalSec = (Number(runMinEl.value) || 0) * 60 + (Number(runSecEl.value) || 0);
+      const note = runNoteEl.value.trim();
+
+      if (dist <= 0) return showToast('거리(km)를 입력하세요.');
+      if (totalSec <= 0) return showToast('시간(분/초)을 입력하세요.');
+
+      state.runs.unshift({
+        id: Date.now(),
+        dateISO,
+        dist,
+        totalSec,
+        pace: calcPaceStr(dist, totalSec),
+        note
+      });
+      state.runs.sort((a, b) => b.dateISO.localeCompare(a.dateISO));
+      saveState();
+
+      runDistEl.value = '';
+      runMinEl.value = '';
+      runSecEl.value = '';
+      runNoteEl.value = '';
+      updatePacePreview();
+      renderRunning();
+      showToast(`${dist}km 러닝 기록이 저장되었습니다! 🏃`);
+    });
+
+    document.getElementById('editRunGoalBtn').addEventListener('click', () => {
+      const val = prompt('월간 목표 러닝 거리(km)를 입력하세요:', state.settings.monthlyRunGoal || 100);
+      if (val && !isNaN(Number(val)) && Number(val) > 0) {
+        state.settings.monthlyRunGoal = Number(val);
+        saveState();
+        renderRunning();
+        showToast(`월간 러닝 목표: ${val}km`);
+      }
+    });
+
+    function renderRunning() {
+      const now = new Date();
+      const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      document.getElementById('runMonthLabel').textContent = `${now.getMonth() + 1}월 러닝 누적`;
+
+      const monthKm = state.runs
+        .filter(r => r.dateISO.startsWith(ym))
+        .reduce((acc, r) => acc + (Number(r.dist) || 0), 0);
+
+      const goal = state.settings.monthlyRunGoal || 100;
+      const pct = Math.min(100, Math.round((monthKm / goal) * 100));
+
+      document.getElementById('runMonthTotal').textContent = `${monthKm.toFixed(2)} km`;
+      document.getElementById('runGoalText').textContent = `/ 목표 ${goal} km (${pct}%)`;
+      document.getElementById('runProgress').style.width = `${pct}%`;
+      document.getElementById('runRemainText').textContent =
+        monthKm >= goal
+          ? '🎉 이번 달 러닝 목표를 달성했습니다!'
+          : `목표까지 ${(goal - monthKm).toFixed(2)} km 남았습니다.`;
+
+      const list = document.getElementById('runHistoryList');
+      document.getElementById('runCount').textContent = `총 ${state.runs.length}회`;
+
+      if (state.runs.length === 0) {
+        list.innerHTML = '<div class="empty-state">아직 러닝 기록이 없습니다.</div>';
+        return;
+      }
+
+      list.innerHTML = '';
+      state.runs.forEach((r, idx) => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+          <div class="history-top">
+            <div class="history-date">${r.dateISO}</div>
+            <span class="history-badge run">${r.dist} km</span>
+          </div>
+          <div class="history-meta">
+            <span>시간 ${formatTime(r.totalSec)}</span>
+            <span>페이스 ${r.pace}</span>
+            ${r.note ? `<span>· ${r.note}</span>` : ''}
+          </div>
+          <div style="margin-top:8px; text-align:right;">
+            <button class="btn-mini danger" data-del-run="${idx}">삭제</button>
+          </div>
+        `;
+        div.querySelector('[data-del-run]').addEventListener('click', () => {
+          if (confirm('이 러닝 기록을 삭제할까요?')) {
+            state.runs.splice(idx, 1);
             saveState();
+            renderRunning();
+          }
+        });
+        list.appendChild(div);
+      });
+    }
+
+    // =========================================================
+    // 7. CALENDAR & HISTORY VIEW
+    // =========================================================
+    function renderCalendar() {
+      document.getElementById('calMonthTitle').textContent = `${calYear}년 ${calMonth + 1}월`;
+      const grid = document.getElementById('calGrid');
+      grid.innerHTML = '';
+
+      const dows = ['일', '월', '화', '수', '목', '금', '토'];
+      dows.forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'cal-dow';
+        el.textContent = d;
+        grid.appendChild(el);
+      });
+
+      const firstDay = new Date(calYear, calMonth, 1).getDay();
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+      const todayStr = todayISO();
+
+      // Map dateISO -> Set of tags (d1, d2, d3, run)
+      const dayMap = {};
+      const addTag = (iso, tag) => {
+        if (!iso) return;
+        if (!dayMap[iso]) dayMap[iso] = new Set();
+        dayMap[iso].add(tag);
+      };
+
+      state.history.forEach(h => {
+        const iso = h.dateISO || (h.date ? h.date.slice(0, 10) : '');
+        if (h.dayId === 'day1') addTag(iso, 'd1');
+        else if (h.dayId === 'day2') addTag(iso, 'd2');
+        else if (h.dayId === 'day3') addTag(iso, 'd3');
+      });
+      state.runs.forEach(r => addTag(r.dateISO, 'run'));
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-cell empty';
+        grid.appendChild(empty);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const iso = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const cell = document.createElement('div');
+        cell.className = `cal-cell ${iso === todayStr ? 'today' : ''}`;
+
+        let dotsHtml = '';
+        if (dayMap[iso]) {
+          dayMap[iso].forEach(tag => {
+            dotsHtml += `<span class="dot ${tag}"></span>`;
+          });
         }
 
-        // Render Toggles UI (Payday & Split Payment)
-        function renderTogglesUI() {
-            // Split Payment Toggle UI
-            const splitBtn = document.getElementById('splitPaymentToggleBtn');
-            const splitBadge = document.getElementById('splitPaymentStatusBadge');
-            const splitGuideBtn = document.getElementById('splitGuideBtn');
-            const planBadge = document.getElementById('planModeBadge');
+        cell.innerHTML = `
+          <div class="cal-day-num">${day}</div>
+          <div class="cal-dots">${dotsHtml}</div>
+        `;
+        grid.appendChild(cell);
+      }
+    }
 
-            if (state.isSplitPayment) {
-                splitBtn.className = "flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900 border border-emerald-500/60 transition-all text-xs shadow-md shadow-emerald-500/10";
-                splitBadge.className = "font-extrabold px-2 py-0.5 rounded-full text-[11px] bg-emerald-500 text-slate-950";
-                splitBadge.innerText = "ON (분할결제)";
-                splitGuideBtn.classList.remove('hidden');
-                planBadge.innerText = "분할 결제 강추";
-                planBadge.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-            } else {
-                splitBtn.className = "flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-all text-xs opacity-70";
-                splitBadge.className = "font-extrabold px-2 py-0.5 rounded-full text-[11px] bg-slate-800 text-slate-400";
-                splitBadge.innerText = "OFF (단일결제)";
-                splitGuideBtn.classList.add('hidden');
-                planBadge.innerText = "단일 카드 결제";
-                planBadge.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30";
+    document.getElementById('calPrevBtn').addEventListener('click', () => {
+      calMonth--;
+      if (calMonth < 0) { calMonth = 11; calYear--; }
+      renderCalendar();
+    });
+
+    document.getElementById('calNextBtn').addEventListener('click', () => {
+      calMonth++;
+      if (calMonth > 11) { calMonth = 0; calYear++; }
+      renderCalendar();
+    });
+
+    function renderHistory() {
+      renderCalendar();
+      const list = document.getElementById('historyList');
+      document.getElementById('historyCount').textContent = `총 ${state.history.length}회`;
+
+      if (state.history.length === 0) {
+        list.innerHTML = '<div class="empty-state">아직 저장된 운동 기록이 없습니다.<br>오늘 운동을 완료하고 기록을 남겨보세요!</div>';
+        return;
+      }
+
+      list.innerHTML = '';
+      state.history.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+
+        const detailsHtml = item.exercises
+          .map(ex => {
+            const setStr = ex.sets
+              .map(s => `${s.isWarmup ? '[W]' : ''}${s.weight}kg×${s.reps}${s.rpe ? `@${s.rpe}` : ''}`)
+              .join(', ');
+            return `<div class="history-ex-line"><strong>${ex.name}</strong>: ${setStr}</div>`;
+          })
+          .join('');
+
+        div.innerHTML = `
+          <div class="history-top">
+            <div class="history-date">${item.date}</div>
+            <span class="history-badge">${item.dayTitle}</span>
+          </div>
+          <div class="history-meta">
+            <span>볼륨 ${item.totalVol.toLocaleString()} kg</span>
+            <span>세트 ${item.totalSets}회</span>
+            <span>시간 ${formatTime(item.durationSec || 0)}</span>
+          </div>
+          <div class="history-details">
+            ${detailsHtml}
+            <div style="margin-top:10px; text-align:right;">
+              <button class="btn-mini danger" data-del-history="${idx}">기록 삭제</button>
+            </div>
+          </div>
+        `;
+
+        div.addEventListener('click', e => {
+          if (e.target.dataset.delHistory !== undefined) {
+            e.stopPropagation();
+            if (confirm('이 운동 기록을 삭제할까요?')) {
+              state.history.splice(Number(e.target.dataset.delHistory), 1);
+              saveState();
+              renderHistory();
             }
+            return;
+          }
+          div.classList.toggle('open');
+        });
 
-            // Payday Mode Toggle UI
-            const paydayBtn = document.getElementById('paydayToggleBtn');
-            const paydayBadge = document.getElementById('paydayStatusBadge');
+        list.appendChild(div);
+      });
+    }
 
-            if (state.isPaydayMode) {
-                paydayBtn.className = "flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900 border border-amber-500/60 transition-all text-xs";
-                paydayBadge.className = "font-bold px-2 py-0.5 rounded-full text-[11px] bg-amber-500 text-slate-950";
-                paydayBadge.innerText = "ON (10일)";
-            } else {
-                paydayBtn.className = "flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-all text-xs opacity-70";
-                paydayBadge.className = "font-bold px-2 py-0.5 rounded-full text-[11px] bg-slate-800 text-slate-400";
-                paydayBadge.innerText = "OFF";
-            }
+    // =========================================================
+    // 8. RENDER STATS & BIG 3 VIEW
+    // =========================================================
+    function getBestLifts() {
+      const best = {
+        bench: { name: '벤치프레스', maxW: 0, est1RM: 0 },
+        deadlift: { name: '데드리프트', maxW: 0, est1RM: 0 },
+        squat: { name: '스쿼트', maxW: 0, est1RM: 0 },
+        ohp: { name: '오버헤드 프레스', maxW: 0, est1RM: 0 }
+      };
+
+      const scan = (name, key, sets) => {
+        let k = key;
+        if (!k) {
+          if (name.includes('벤치') && !name.includes('인클')) k = 'bench';
+          else if (name.includes('데드')) k = 'deadlift';
+          else if (name.includes('스쿼트') && !name.includes('스플릿')) k = 'squat';
+          else if (name.includes('밀리터리') || name.includes('OHP')) k = 'ohp';
         }
+        if (!k || !best[k]) return;
+        sets.forEach(s => {
+          if (s.isWarmup) return;
+          const w = Number(s.weight) || 0;
+          const r = Number(s.reps) || 0;
+          const rm = calcEpley1RM(w, r);
+          if (w > best[k].maxW) best[k].maxW = w;
+          if (rm > best[k].est1RM) best[k].est1RM = rm;
+        });
+      };
 
-        // Toggle Split Payment ON/OFF
-        function toggleSplitPaymentMode() {
-            state.isSplitPayment = !state.isSplitPayment;
-            renderAll();
+      Object.values(state.routines).forEach(day => {
+        day.exercises.forEach(ex => scan(ex.name, ex.big3Key, ex.sets));
+      });
+      state.history.forEach(h => {
+        h.exercises.forEach(ex => scan(ex.name, ex.big3Key, ex.sets));
+      });
+
+      return best;
+    }
+
+    function renderStats() {
+      const best = getBestLifts();
+      const total = best.bench.est1RM + best.deadlift.est1RM + best.squat.est1RM;
+      const goal = state.settings.big3Goal || 500;
+      const pct = Math.min(100, Math.round((total / goal) * 100));
+
+      document.getElementById('big3Total').textContent = `${total} kg`;
+      document.getElementById('big3GoalText').textContent = `/ 목표 ${goal} kg (${pct}%)`;
+      document.getElementById('big3Progress').style.width = `${pct}%`;
+      document.getElementById('big3Remain').textContent =
+        total >= goal
+          ? '🎉 목표 3대 중량을 달성했습니다!'
+          : `목표까지 ${goal - total} kg 남았습니다 (현재 루틴 및 기록 기준)`;
+
+      const grid = document.getElementById('big3Grid');
+      grid.innerHTML = '';
+      ['bench', 'deadlift', 'squat', 'ohp'].forEach(k => {
+        const b = best[k];
+        const el = document.createElement('div');
+        el.className = 'lift-item';
+        el.innerHTML = `
+          <div class="lift-name">${b.name}</div>
+          <div class="lift-val">${b.est1RM} kg</div>
+          <div class="lift-sub">최고 중량 ${b.maxW} kg</div>
+        `;
+        grid.appendChild(el);
+      });
+
+      const chartBox = document.getElementById('volumeChartContainer');
+      const recent = state.history.slice(0, 10).reverse();
+      if (recent.length === 0) {
+        chartBox.innerHTML = '<div class="empty-state">운동을 완료하면 볼륨 그래프가 표시됩니다.</div>';
+        return;
+      }
+
+      const maxVol = Math.max(1000, ...recent.map(r => r.totalVol));
+      const w = 360;
+      const h = 160;
+      const padB = 26;
+      const padT = 18;
+      const barGap = 8;
+      const barW = Math.max(14, (w - barGap * (recent.length + 1)) / recent.length);
+
+      let bars = '';
+      recent.forEach((r, i) => {
+        const bh = Math.max(6, ((r.totalVol / maxVol) * (h - padB - padT)));
+        const x = barGap + i * (barW + barGap);
+        const y = h - padB - bh;
+        const label = r.date.slice(5, 10);
+        bars += `
+          <rect x="${x}" y="${y}" width="${barW}" height="${bh}" rx="4" fill="#3b82f6" />
+          <text x="${x + barW / 2}" y="${y - 4}" fill="#cbd5e1" font-size="9" text-anchor="middle">${Math.round(r.totalVol / 100) / 10}t</text>
+          <text x="${x + barW / 2}" y="${h - 8}" fill="#94a3b8" font-size="9" text-anchor="middle">${label}</text>
+        `;
+      });
+
+      chartBox.innerHTML = `
+        <svg viewBox="0 0 ${w} ${h}" class="svg-chart">
+          ${bars}
+        </svg>
+      `;
+    }
+
+    document.getElementById('editGoalBtn').addEventListener('click', () => {
+      const val = prompt('목표 3대 합계(kg)를 입력하세요:', state.settings.big3Goal || 500);
+      if (val && !isNaN(Number(val)) && Number(val) > 0) {
+        state.settings.big3Goal = Number(val);
+        saveState();
+        renderStats();
+        showToast(`목표가 ${val}kg으로 변경되었습니다.`);
+      }
+    });
+
+    // =========================================================
+    // 9. SETTINGS & DATA BACKUP
+    // =========================================================
+    function renderSettings() {
+      document.querySelectorAll('[data-default-rest]').forEach(btn => {
+        const sec = Number(btn.dataset.defaultRest);
+        btn.style.borderColor = sec === state.settings.defaultRestSec ? 'var(--primary)' : 'var(--border)';
+        btn.style.background = sec === state.settings.defaultRestSec ? 'rgba(59,130,246,0.2)' : 'var(--surface-2)';
+      });
+    }
+
+    document.querySelectorAll('[data-default-rest]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.settings.defaultRestSec = Number(btn.dataset.defaultRest);
+        saveState();
+        renderSettings();
+        renderWorkout();
+        showToast(`기본 휴식 시간: ${state.settings.defaultRestSec}초`);
+      });
+    });
+
+    document.getElementById('exportDataBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `powerbuilding-backup-${todayISO()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('백업 파일이 다운로드되었습니다.');
+    });
+
+    document.getElementById('importDataBtn').addEventListener('click', () => {
+      document.getElementById('importFileInput').click();
+    });
+
+    document.getElementById('importFileInput').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (!parsed.routines) throw new Error('Invalid');
+          if (!parsed.runs) parsed.runs = [];
+          state = parsed;
+          saveState();
+          renderWorkout();
+          showToast('백업 데이터를 성공적으로 복원했습니다.');
+        } catch {
+          showToast('올바른 백업 JSON 파일이 아닙니다.');
         }
-
-        // Toggle Payday Mode ON/OFF
-        function togglePaydayMode() {
-            state.isPaydayMode = !state.isPaydayMode;
-            renderAll();
-        }
-
-        // Render Cart Items
-        function renderCartUI() {
-            const container = document.getElementById('cartItemsContainer');
-            const totalText = document.getElementById('cartTotalText');
-            const countBadge = document.getElementById('cartCountBadge');
-
-            let total = 0;
-            let itemCount = 0;
-
-            if (state.cart.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-6 text-slate-500 text-xs">
-                        <i class="fa-solid fa-basket-shopping text-2xl mb-1 text-slate-600 block"></i>
-                        장바구니가 비어있습니다.<br>아래 카탈로그나 퀵 바에서 물품을 담아보세요!
-                    </div>
-                `;
-            } else {
-                let html = '';
-                state.cart.forEach(item => {
-                    const subtotal = item.price * item.qty;
-                    total += subtotal;
-                    itemCount += item.qty;
-
-                    html += `
-                        <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
-                            <div class="flex-1 min-w-0 pr-2">
-                                <div class="font-bold text-slate-200 truncate">${item.name}</div>
-                                <div class="text-[11px] text-slate-400">${item.price.toLocaleString()}원 × ${item.qty} = <span class="text-emerald-400 font-semibold">${subtotal.toLocaleString()}원</span></div>
-                            </div>
-                            <div class="flex items-center space-x-1.5">
-                                <div class="flex items-center bg-slate-900 rounded-lg border border-slate-800">
-                                    <button onclick="updateCartQty(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center text-slate-300 hover:bg-slate-800 rounded-l-lg font-bold">-</button>
-                                    <span class="w-6 text-center font-bold text-slate-200 text-[11px]">${item.qty}</span>
-                                    <button onclick="updateCartQty(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center text-slate-300 hover:bg-slate-800 rounded-r-lg font-bold">+</button>
-                                </div>
-                                <button onclick="removeCartItem(${item.id})" class="text-slate-500 hover:text-rose-400 p-1">
-                                    <i class="fa-solid fa-xmark text-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-
-            totalText.innerText = total.toLocaleString();
-            countBadge.innerText = `${itemCount}개`;
-        }
-
-        // Add Item to Cart
-        function addToCart(catalogId) {
-            const item = state.catalog.find(c => c.id === catalogId);
-            if (!item) return;
-
-            const existing = state.cart.find(c => c.id === catalogId);
-            if (existing) {
-                existing.qty += 1;
-            } else {
-                state.cart.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
-            }
-            renderAll();
-        }
-
-        // Update Cart Quantity
-        function updateCartQty(id, delta) {
-            const existing = state.cart.find(c => c.id === id);
-            if (existing) {
-                existing.qty += delta;
-                if (existing.qty <= 0) {
-                    state.cart = state.cart.filter(c => c.id !== id);
-                }
-            }
-            renderAll();
-        }
-
-        // Remove Single Cart Item
-        function removeCartItem(id) {
-            state.cart = state.cart.filter(c => c.id !== id);
-            renderAll();
-        }
-
-        // Clear Entire Cart
-        function clearCart() {
-            state.cart = [];
-            renderAll();
-        }
-
-        // Render Quick Favorites Horizontal Bar
-        function renderQuickFavoritesUI() {
-            const container = document.getElementById('quickFavoritesBar');
-            const favorites = state.catalog.filter(item => item.fav);
-
-            if (favorites.length === 0) {
-                container.innerHTML = `<span class="text-[11px] text-slate-500 py-1">카탈로그에서 ⭐을 클릭해 즐겨찾기를 추가해 보세요.</span>`;
-                return;
-            }
-
-            let html = '';
-            favorites.forEach(item => {
-                html += `
-                    <button onclick="addToCart(${item.id})" class="flex-shrink-0 bg-slate-900 border border-slate-800 hover:border-emerald-500/50 px-2.5 py-1.5 rounded-xl text-xs flex items-center space-x-1.5 active:scale-95 transition">
-                        <span class="font-medium text-slate-200 truncate max-w-[90px]">${item.name}</span>
-                        <span class="text-[10px] font-bold text-emerald-400 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/20">${item.price.toLocaleString()}원</span>
-                    </button>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        // Render Card Limits Status Grid
-        function renderCardLimitsStatusUI() {
-            document.getElementById('statusIBKLimit').innerText = `${state.userCards.ibk.over30kLimit.toLocaleString()}원`;
-            document.getElementById('statusIBKCount').innerText = `3만원↑ ${state.userCards.ibk.over30kCount}회 남음`;
-
-            document.getElementById('statusShinhanLimit').innerText = `${state.userCards.shinhan.limit.toLocaleString()}원`;
-            document.getElementById('statusHanaLimit').innerText = `${state.userCards.hana.limit.toLocaleString()}원`;
-
-            // Sync Settings Inputs
-            document.getElementById('ownIBK').checked = state.userCards.ibk.own;
-            document.getElementById('ibkSalaryTransfer').checked = state.userCards.ibk.salaryTransfer;
-            document.getElementById('ibkOver30kLimit').value = state.userCards.ibk.over30kLimit;
-            document.getElementById('ibkOver30kCount').value = state.userCards.ibk.over30kCount;
-
-            document.getElementById('ownShinhan').checked = state.userCards.shinhan.own;
-            document.getElementById('shinhanLimit').value = state.userCards.shinhan.limit;
-
-            document.getElementById('ownHana').checked = state.userCards.hana.own;
-            document.getElementById('hanaLimit').value = state.userCards.hana.limit;
-        }
-
-        // Save User Settings From Modal
-        function saveUserSettings() {
-            state.userCards.ibk.own = document.getElementById('ownIBK').checked;
-            state.userCards.ibk.salaryTransfer = document.getElementById('ibkSalaryTransfer').checked;
-            state.userCards.ibk.over30kLimit = parseInt(document.getElementById('ibkOver30kLimit').value) || 0;
-            state.userCards.ibk.over30kCount = parseInt(document.getElementById('ibkOver30kCount').value) || 0;
-
-            state.userCards.shinhan.own = document.getElementById('ownShinhan').checked;
-            state.userCards.shinhan.limit = parseInt(document.getElementById('shinhanLimit').value) || 0;
-
-            state.userCards.hana.own = document.getElementById('ownHana').checked;
-            state.userCards.hana.limit = parseInt(document.getElementById('hanaLimit').value) || 0;
-
-            renderAll();
-        }
-
-        // Core Recommendation & Refund Optimization Engine
-        function calculateAndRenderRecommendation() {
-            const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            const planList = document.getElementById('paymentPlanList');
-            const totalBadge = document.getElementById('totalCashbackBadge');
-            const tierBanner = document.getElementById('tierJumpBanner');
-            const tierBannerText = document.getElementById('tierJumpBannerText');
-
-            tierBanner.classList.add('hidden');
-
-            if (cartTotal === 0) {
-                planList.innerHTML = `
-                    <div class="text-center py-4 text-slate-500 text-xs">
-                        물품을 담으시면 3기 나라사랑카드 최적 결제 플랜이 즉시 계산됩니다.
-                    </div>
-                `;
-                totalBadge.innerText = "최대 환급 0원";
-                return;
-            }
-
-            // Check Tier Jump Tip Banner (If close to 30,000 KRW threshold for 20% discount)
-            if (cartTotal < 30000 && (30000 - cartTotal) <= 8000) {
-                const diff = 30000 - cartTotal;
-                tierBannerText.innerHTML = `<strong>💡 영끌 팁:</strong> <span class="text-amber-400 font-extrabold">${diff.toLocaleString()}원</span>만 더 담으면 <strong>신한/IBK카드 20% 고율 할인(3만원 이상)</strong> 구간에 진입합니다!`;
-                tierBanner.classList.remove('hidden');
-            }
-
-            if (state.isSplitPayment) {
-                // Multi-Card Split Optimization Strategy
-                calculateSplitPaymentPlan(cartTotal);
-            } else {
-                // Single Card Payment Strategy
-                calculateSinglePaymentPlan(cartTotal);
-            }
-        }
-
-        // Strategy A: Multi-card Split Payment Strategy
-        function calculateSplitPaymentPlan(total) {
-            const planList = document.getElementById('paymentPlanList');
-            const totalBadge = document.getElementById('totalCashbackBadge');
-
-            let steps = [];
-            let totalRefund = 0;
-
-            // Decision Logic for 3rd Gen Cards:
-            // 1. If total >= 30,000 KRW, split 30,000 KRW to Shinhan (or IBK) for 20% cashback (= +6,000 KRW)
-            // 2. Remaining amount (e.g., total - 30,000) goes to Hana for 30% discount (under 30,000 KRW) or IBK 10%
-            if (total >= 30000 && state.userCards.shinhan.own && state.userCards.shinhan.limit >= 6000) {
-                // Step 1: Shinhan Card 30,000 KRW
-                const step1Pay = 30000;
-                const step1Refund = Math.min(step1Pay * 0.20, state.userCards.shinhan.limit);
-                steps.push({
-                    card: "신한 나라사랑카드",
-                    amount: step1Pay,
-                    refund: step1Refund,
-                    desc: "3만 이상 20% 할인 (최대 구간)",
-                    color: "border-blue-500/40 text-blue-300"
-                });
-                totalRefund += step1Refund;
-
-                const remainder = total - step1Pay;
-                if (remainder > 0) {
-                    if (state.userCards.hana.own && state.userCards.hana.limit > 0) {
-                        // Hana 30% under 30k
-                        const step2Refund = Math.min(remainder * 0.30, state.userCards.hana.limit);
-                        steps.push({
-                            card: "하나 나라사랑카드",
-                            amount: remainder,
-                            refund: step2Refund,
-                            desc: "3만 미만 30% 집중 할인",
-                            color: "border-emerald-500/40 text-emerald-300"
-                        });
-                        totalRefund += step2Refund;
-                    } else if (state.userCards.ibk.own && state.userCards.ibk.over30kLimit > 0) {
-                        const step2Refund = Math.min(remainder * 0.10, state.userCards.ibk.over30kLimit);
-                        steps.push({
-                            card: "IBK 나라사랑카드",
-                            amount: remainder,
-                            refund: step2Refund,
-                            desc: "3만 미만 10% 할인",
-                            color: "border-blue-400/40 text-blue-400"
-                        });
-                        totalRefund += step2Refund;
-                    } else {
-                        steps.push({
-                            card: "잔액 (일반 결제)",
-                            amount: remainder,
-                            refund: 0,
-                            desc: "추가 한도 없음",
-                            color: "border-slate-700 text-slate-400"
-                        });
-                    }
-                }
-            } else if (total < 30000 && state.userCards.hana.own) {
-                // Total is under 30,000 KRW -> Best to pay with Hana Card (30% discount)
-                const refund = Math.min(total * 0.30, state.userCards.hana.limit);
-                steps.push({
-                    card: "하나 나라사랑카드",
-                    amount: total,
-                    refund: refund,
-                    desc: "3만 미만 30% 할인 (단일)",
-                    color: "border-emerald-500/40 text-emerald-300"
-                });
-                totalRefund += refund;
-            } else {
-                // Fallback single best card
-                let bestCard = "신한/IBK 나라사랑카드";
-                let rate = total >= 30000 ? 0.20 : 0.10;
-                let refund = total * rate;
-                steps.push({
-                    card: bestCard,
-                    amount: total,
-                    refund: refund,
-                    desc: `${total >= 30000 ? '20%' : '10%'} 일반 결제`,
-                    color: "border-blue-400/40 text-blue-300"
-                });
-                totalRefund += refund;
-            }
-
-            renderPlanListHTML(steps);
-            totalBadge.innerText = `최대 환급 +${Math.round(totalRefund).toLocaleString()}원`;
-        }
-
-        // Strategy B: Single Card Payment Strategy (When Split Payment is OFF)
-        function calculateSinglePaymentPlan(total) {
-            const planList = document.getElementById('paymentPlanList');
-            const totalBadge = document.getElementById('totalCashbackBadge');
-
-            let cardOptions = [];
-
-            // 1. Shinhan Single Option
-            if (state.userCards.shinhan.own) {
-                let rate = total >= 30000 ? 0.20 : 0.0;
-                let refund = Math.min(total * rate, state.userCards.shinhan.limit);
-                cardOptions.push({
-                    card: "신한 나라사랑카드",
-                    amount: total,
-                    refund: refund,
-                    desc: total >= 30000 ? "3만원 이상 20% 할인적용" : "3만원 미만 (할인 구간 미달)",
-                    color: "border-blue-500/40 text-blue-300"
-                });
-            }
-
-            // 2. Hana Single Option
-            if (state.userCards.hana.own) {
-                let rate = total < 30000 ? 0.30 : 0.10;
-                let refund = Math.min(total * rate, state.userCards.hana.limit);
-                cardOptions.push({
-                    card: "하나 나라사랑카드",
-                    amount: total,
-                    refund: refund,
-                    desc: total < 30000 ? "3만원 미만 30% 최고 할인" : "3만원 이상 (10% 할인)",
-                    color: "border-emerald-500/40 text-emerald-300"
-                });
-            }
-
-            // 3. IBK Single Option
-            if (state.userCards.ibk.own) {
-                let rate = (total >= 30000 && state.userCards.ibk.over30kCount > 0) ? 0.20 : 0.10;
-                let refund = Math.min(total * rate, state.userCards.ibk.over30kLimit);
-                cardOptions.push({
-                    card: "IBK 기업 나라사랑카드",
-                    amount: total,
-                    refund: refund,
-                    desc: total >= 30000 ? "3만원 이상 20% 할인 (횟수차감)" : "3만원 미만 10% 할인",
-                    color: "border-blue-400/40 text-blue-400"
-                });
-            }
-
-            // Sort by refund descending
-            cardOptions.sort((a, b) => b.refund - a.refund);
-
-            if (cardOptions.length === 0) {
-                planList.innerHTML = `<div class="text-xs text-rose-400 text-center py-2">보유 설정된 카드가 없습니다. 설정에서 카드를 체크하세요.</div>`;
-                totalBadge.innerText = "최대 환급 0원";
-                return;
-            }
-
-            // Render top 1 single best card & show runners up
-            const best = cardOptions[0];
-            let steps = [{
-                card: `⭐ [추천] ${best.card}`,
-                amount: best.amount,
-                refund: best.refund,
-                desc: `${best.desc} (전액 단일 결제)`,
-                color: best.color
-            }];
-
-            renderPlanListHTML(steps);
-            totalBadge.innerText = `단일 환급 +${Math.round(best.refund).toLocaleString()}원`;
-        }
-
-        // Render Recommendation Steps HTML
-        function renderPlanListHTML(steps) {
-            const planList = document.getElementById('paymentPlanList');
-            let html = '';
-            steps.forEach((s, idx) => {
-                html += `
-                    <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border ${s.color} text-xs">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-200 font-extrabold flex items-center justify-center text-[10px] border border-slate-700">${idx+1}</span>
-                            <div>
-                                <div class="font-extrabold text-white">${s.card} → <span class="text-amber-300">${s.amount.toLocaleString()}원</span></div>
-                                <div class="text-[10px] text-slate-400">${s.desc}</div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="font-black text-emerald-400 text-sm">+${Math.round(s.refund).toLocaleString()}원</span>
-                        </div>
-                    </div>
-                `;
-            });
-            planList.innerHTML = html;
-        }
-
-        // Open Receipt 2-Split Guide Modal
-        function openSplitGuideModal() {
-            const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            if (cartTotal < 30000) {
-                alert("총 금액이 3만원 미만일 때는 단일 하나카드로 전액 결제하는 것이 유리합니다.");
-                return;
-            }
-
-            const guideContent = document.getElementById('splitGuideContent');
-            
-            // Greedily split cart items to make Receipt A ~ 30,000 KRW
-            let receiptA = [];
-            let receiptB = [];
-            let totalA = 0;
-            let totalB = 0;
-
-            // Flat item list
-            let flatItems = [];
-            state.cart.forEach(i => {
-                for (let k = 0; k < i.qty; k++) {
-                    flatItems.push({ name: i.name, price: i.price });
-                }
-            });
-
-            // Sort descending by price to fill Receipt A first
-            flatItems.sort((a, b) => b.price - a.price);
-
-            flatItems.forEach(item => {
-                if (totalA < 30000 || (totalA < 32000 && totalA + item.price <= 35000)) {
-                    receiptA.push(item);
-                    totalA += item.price;
-                } else {
-                    receiptB.push(item);
-                    totalB += item.price;
-                }
-            });
-
-            let html = `
-                <!-- Receipt 1 -->
-                <div class="p-3 bg-slate-950 rounded-xl border border-blue-500/40 space-y-1.5">
-                    <div class="flex justify-between font-extrabold text-blue-300">
-                        <span>영수증 1 (신한/IBK 3만원 이상 20%)</span>
-                        <span>${totalA.toLocaleString()}원</span>
-                    </div>
-                    <div class="text-[11px] text-slate-400 space-y-0.5 border-t border-slate-800 pt-1.5">
-                        ${receiptA.map(i => `<div>• ${i.name} (${i.price.toLocaleString()}원)</div>`).join('')}
-                    </div>
-                    <div class="text-right text-[11px] text-emerald-400 font-bold pt-1">
-                        예상 환급: +${Math.round(totalA * 0.20).toLocaleString()}원
-                    </div>
-                </div>
-
-                <!-- Receipt 2 -->
-                <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/40 space-y-1.5">
-                    <div class="flex justify-between font-extrabold text-emerald-300">
-                        <span>영수증 2 (하나카드 3만원 미만 30%)</span>
-                        <span>${totalB.toLocaleString()}원</span>
-                    </div>
-                    <div class="text-[11px] text-slate-400 space-y-0.5 border-t border-slate-800 pt-1.5">
-                        ${receiptB.length > 0 ? receiptB.map(i => `<div>• ${i.name} (${i.price.toLocaleString()}원)</div>`).join('') : '<div class="text-slate-500">남은 물품 없음</div>'}
-                    </div>
-                    <div class="text-right text-[11px] text-emerald-400 font-bold pt-1">
-                        예상 환급: +${Math.round(totalB * 0.30).toLocaleString()}원
-                    </div>
-                </div>
-            `;
-
-            guideContent.innerHTML = html;
-            document.getElementById('splitGuideModal').classList.remove('hidden');
-        }
-
-        function closeSplitGuideModal() {
-            document.getElementById('splitGuideModal').classList.add('hidden');
-        }
-
-        // Open Limit Maximizer Modal ("한도 털어먹기")
-        function openLimitMaximizerModal() {
-            const content = document.getElementById('limitMaximizerContent');
-            const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-
-            const ibkRem = state.userCards.ibk.over30kLimit;
-            const shinhanRem = state.userCards.shinhan.limit;
-            const hanaRem = state.userCards.hana.limit;
-
-            // Target calculations to maximize refund limits
-            const maxShinhanSpend = Math.round(shinhanRem / 0.20);
-            const maxHanaSpend = Math.round(hanaRem / 0.30);
-
-            let html = `
-                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                    <div class="font-bold text-amber-300">현재 남은 한도 기준 최고 효율 결제액</div>
-                    <div class="space-y-1 text-slate-300">
-                        <div class="flex justify-between">
-                            <span>신한 20% 한도 완파 결제액:</span>
-                            <strong class="text-blue-300">${maxShinhanSpend.toLocaleString()}원</strong>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>하나 30% 한도 완파 결제액:</span>
-                            <strong class="text-emerald-300">${maxHanaSpend.toLocaleString()}원</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
-                    <div class="font-bold text-slate-200">추천 한도 영끌 액션</div>
-                    <p class="text-[11px] text-slate-400">
-                        현재 장바구니(${cartTotal.toLocaleString()}원)에서 약 <strong class="text-amber-300">${Math.max(0, 30000 - cartTotal).toLocaleString()}원</strong>을 더 추가하시면 20% 환급율의 최대 혜택 구간에 딱 맞게 결제할 수 있습니다.
-                    </p>
-                </div>
-            `;
-
-            content.innerHTML = html;
-            document.getElementById('limitMaximizerModal').classList.remove('hidden');
-        }
-
-        function closeLimitMaximizerModal() {
-            document.getElementById('limitMaximizerModal').classList.add('hidden');
-        }
-
-        // Execute Payment Completion Action
-        function executePaymentCompletion() {
-            const cartTotal = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            if (cartTotal === 0) {
-                alert("장바구니에 담긴 물품이 없습니다!");
-                return;
-            }
-
-            let memo = prompt("결제 완료 영수증에 기록할 메모를 입력하세요 (선택):", "PX 정기 이용 결제");
-            if (memo === null) return; // User cancelled
-
-            let estimatedRefund = 0;
-            let cardUsedStr = "";
-
-            if (state.isSplitPayment && cartTotal >= 30000 && state.userCards.shinhan.own) {
-                // Split deduction: Shinhan 30,000 KRW, Hana remainder
-                const step1Refund = Math.min(30000 * 0.20, state.userCards.shinhan.limit);
-                state.userCards.shinhan.limit -= step1Refund;
-
-                const remainder = cartTotal - 30000;
-                let step2Refund = 0;
-                if (remainder > 0 && state.userCards.hana.own) {
-                    step2Refund = Math.min(remainder * 0.30, state.userCards.hana.limit);
-                    state.userCards.hana.limit -= step2Refund;
-                }
-                estimatedRefund = step1Refund + step2Refund;
-                cardUsedStr = "신한(3만)+하나(잔액)";
-            } else {
-                // Single deduction (best single)
-                const refund = Math.min(cartTotal * (cartTotal >= 30000 ? 0.20 : 0.30), state.userCards.shinhan.limit);
-                state.userCards.shinhan.limit -= refund;
-                estimatedRefund = refund;
-                cardUsedStr = "신한카드 단일";
-            }
-
-            // Record in History
-            const now = new Date();
-            const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-            
-            // Expected refund date: 10th of next month
-            const nextMonth10th = new Date(now.getFullYear(), now.getMonth() + 1, 10);
-            const refundDateStr = `${nextMonth10th.getMonth()+1}월 10일`;
-
-            state.history.unshift({
-                id: Date.now(),
-                date: dateStr,
-                total: cartTotal,
-                refund: Math.round(estimatedRefund),
-                card: cardUsedStr,
-                memo: memo || "PX 물품 구매",
-                refundDate: refundDateStr
-            });
-
-            // Clear Cart after payment
-            state.cart = [];
-            renderAll();
-
-            alert(`🎉 결제가 완결 처리되었습니다!\n\n• 결제 금액: ${cartTotal.toLocaleString()}원\n• 예상 환급액: +${Math.round(estimatedRefund).toLocaleString()}원 (다음달 ${refundDateStr} 입금 예정)\n• 남은 카드 한도가 자동으로 차감 업데이트되었습니다.`);
-        }
-
-        // Open & Close Settings Modal
-        function openSettingsModal() {
-            document.getElementById('settingsModal').classList.remove('hidden');
-        }
-        function closeSettingsModal() {
-            document.getElementById('settingsModal').classList.add('hidden');
-        }
-
-        // Open & Close Catalog Modal
-        function openCatalogModal() {
-            renderCatalogItems();
-            document.getElementById('catalogModal').classList.remove('hidden');
-        }
-        function closeCatalogModal() {
-            document.getElementById('catalogModal').classList.add('hidden');
-        }
-
-        // Category Filter for Catalog
-        function setCategoryFilter(cat) {
-            state.activeCategoryFilter = cat;
-            document.querySelectorAll('.cat-tab-btn').forEach(btn => {
-                btn.className = "cat-tab-btn font-bold px-2.5 py-1 rounded-lg text-slate-400 hover:text-white";
-            });
-            event.target.className = "cat-tab-btn active font-bold px-2.5 py-1 rounded-lg bg-emerald-600 text-white";
-            renderCatalogItems();
-        }
-
-        // Render Catalog Modal Items List
-        function renderCatalogItems() {
-            const container = document.getElementById('catalogItemsList');
-            const search = document.getElementById('catalogSearchInput').value.trim().toLowerCase();
-
-            let items = state.catalog.filter(i => {
-                const matchCat = (state.activeCategoryFilter === 'all' || i.category === state.activeCategoryFilter);
-                const matchSearch = (i.name.toLowerCase().includes(search));
-                return matchCat && matchSearch;
-            });
-
-            if (items.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">검색 조건에 일치하는 PX 품목이 없습니다.</div>`;
-                return;
-            }
-
-            let html = '';
-            items.forEach(item => {
-                html += `
-                    <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
-                        <div class="flex items-center space-x-2.5 min-w-0 flex-1 pr-2">
-                            <button onclick="toggleFavoriteCatalog(${item.id})" class="text-sm ${item.fav ? 'text-amber-400' : 'text-slate-600 hover:text-slate-400'}">
-                                <i class="fa-${item.fav ? 'solid' : 'regular'} fa-star"></i>
-                            </button>
-                            <div class="min-w-0 flex-1">
-                                <div class="font-bold text-slate-200 truncate">${item.name}</div>
-                                <div class="text-[10px] text-slate-400">${item.category} • <span class="text-emerald-400 font-semibold">${item.price.toLocaleString()}원</span></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-1.5">
-                            <button onclick="editCatalogPrice(${item.id})" class="text-slate-400 hover:text-amber-300 px-1.5 py-1 text-[11px]">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button onclick="deleteCatalogItem(${item.id})" class="text-slate-500 hover:text-rose-400 px-1.5 py-1 text-[11px]">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                            <button onclick="addToCart(${item.id})" class="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600 border border-emerald-500/40 text-emerald-300 hover:text-white rounded-lg font-extrabold text-[11px] transition">
-                                + 담기
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        // Toggle Star Favorite Status
-        function toggleFavoriteCatalog(id) {
-            const item = state.catalog.find(i => i.id === id);
-            if (item) {
-                item.fav = !item.fav;
-                renderAll();
-                renderCatalogItems();
-            }
-        }
-
-        // Edit Catalog Item Price
-        function editCatalogPrice(id) {
-            const item = state.catalog.find(i => i.id === id);
-            if (!item) return;
-            const newPrice = prompt(`[${item.name}] 수정할 PX 판매 가격(원)을 입력하세요:`, item.price);
-            if (newPrice !== null && !isNaN(newPrice) && parseInt(newPrice) > 0) {
-                item.price = parseInt(newPrice);
-                renderAll();
-                renderCatalogItems();
-            }
-        }
-
-        // Delete Catalog Item
-        function deleteCatalogItem(id) {
-            if (confirm("이 품목을 카탈로그에서 삭제하시겠습니까?")) {
-                state.catalog = state.catalog.filter(i => i.id !== id);
-                renderAll();
-                renderCatalogItems();
-            }
-        }
-
-        // Toggle Custom Item Form
-        function toggleCustomItemForm() {
-            const form = document.getElementById('customItemForm');
-            form.classList.toggle('hidden');
-        }
-
-        // Add Custom Catalog Item
-        function addCustomCatalogItem() {
-            const nameInput = document.getElementById('customName');
-            const priceInput = document.getElementById('customPrice');
-            const catInput = document.getElementById('customCategory');
-
-            const name = nameInput.value.trim();
-            const price = parseInt(priceInput.value);
-
-            if (!name || isNaN(price) || price <= 0) {
-                alert("올바른 품목명과 가격을 입력해 주세요!");
-                return;
-            }
-
-            const newItem = {
-                id: Date.now(),
-                name: name,
-                price: price,
-                category: catInput.value,
-                fav: true
-            };
-
-            state.catalog.unshift(newItem);
-            nameInput.value = '';
-            priceInput.value = '';
-            toggleCustomItemForm();
-            renderAll();
-            renderCatalogItems();
-        }
-
-        // Open History & Backup Modal
-        function openHistoryModal() {
-            renderHistoryUI();
-            document.getElementById('historyModal').classList.remove('hidden');
-        }
-
-        function closeHistoryModal() {
-            document.getElementById('historyModal').classList.add('hidden');
-        }
-
-        // Render History UI
-        function renderHistoryUI() {
-            const container = document.getElementById('paymentHistoryList');
-
-            if (state.history.length === 0) {
-                container.innerHTML = `<div class="text-center py-4 text-slate-500">완결 처리된 영수증 내역이 없습니다.</div>`;
-                return;
-            }
-
-            let html = '';
-            state.history.forEach(h => {
-                html += `
-                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1">
-                        <div class="flex justify-between font-bold text-slate-200">
-                            <span>${h.memo} (${h.card})</span>
-                            <span class="text-emerald-400">+${h.refund.toLocaleString()}원 환급</span>
-                        </div>
-                        <div class="flex justify-between text-[11px] text-slate-400">
-                            <span>${h.date}</span>
-                            <span>결제액: ${h.total.toLocaleString()}원 (입금: ${h.refundDate})</span>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        // JSON Backup Export
-        function exportDataJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `px_cardmaster_backup_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
-        }
-
-        // JSON Backup Import
-        function importDataJSON(event) {
-            const fileReader = new FileReader();
-            fileReader.onload = function(e) {
-                try {
-                    const importedState = JSON.parse(e.target.result);
-                    state = { ...state, ...importedState };
-                    renderAll();
-                    alert("데이터 복구가 성공적으로 완료되었습니다!");
-                    closeHistoryModal();
-                } catch(err) {
-                    alert("올바르지 않은 백업 파일 형식입니다.");
-                }
-            };
-            if (event.target.files[0]) {
-                fileReader.readAsText(event.target.files[0]);
-            }
-        }
-
-        // Reset All Data
-        function resetAllData() {
-            if (confirm("모든 한도 설정, 카탈로그, 결제 이력을 초기 상태로 리셋하시겠습니까?")) {
-                localStorage.removeItem('px_cardmaster_state_v2');
-                state.catalog = [...DEFAULT_CATALOG];
-                state.cart = [];
-                state.history = [];
-                state.userCards = {
-                    ibk: { own: true, salaryTransfer: true, over30kLimit: 50000, over30kCount: 2 },
-                    shinhan: { own: true, limit: 100000 },
-                    hana: { own: true, limit: 100000 }
-                };
-                renderAll();
-                closeHistoryModal();
-            }
-        }
-    </script>
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById('resetRoutineBtn').addEventListener('click', () => {
+      if (confirm('현재 루틴을 원본 PDF 3분할 루틴으로 초기화할까요? (운동·러닝 기록은 유지됩니다)')) {
+        state.routines = JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
+        saveState();
+        renderWorkout();
+        showToast('원본 루틴으로 복원되었습니다.');
+      }
+    });
+
+    // =========================================================
+    // 10. NAVIGATION
+    // =========================================================
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const viewName = btn.dataset.view;
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(`view-${viewName}`).classList.add('active');
+
+        if (viewName === 'workout') renderWorkout();
+        else if (viewName === 'running') renderRunning();
+        else if (viewName === 'history') renderHistory();
+        else if (viewName === 'stats') renderStats();
+        else if (viewName === 'settings') renderSettings();
+      });
+    });
+
+    // Initial Render
+    renderWorkout();
+  </script>
 </body>
 </html>
